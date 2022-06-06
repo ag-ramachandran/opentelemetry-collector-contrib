@@ -24,6 +24,7 @@ import (
 	"github.com/Azure/azure-kusto-go/kusto"
 	"github.com/Azure/azure-kusto-go/kusto/ingest"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
+	jsoniter "github.com/json-iterator/go"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.uber.org/zap"
 )
@@ -39,34 +40,45 @@ type adxMetricsProducer struct {
 
 func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetric.Metrics) error {
 	resourceMetric := metrics.ResourceMetrics()
+	var adxJsonMetricsBytes []byte
 	for i := 0; i < resourceMetric.Len(); i++ {
 		res := resourceMetric.At(i).Resource()
 		scopeMetrics := resourceMetric.At(i).ScopeMetrics()
 		for j := 0; j < scopeMetrics.Len(); j++ {
 			metrics := scopeMetrics.At(j).Metrics()
 			for k := 0; k < metrics.Len(); k++ {
-				mapToAdxMetric(res, metrics.At(k), e.config, e.logger)
+				adxMetrics := mapToAdxMetric(res, metrics.At(k), e.config, e.logger)
+				adxJsonBytes, err := jsoniter.Marshal(adxMetrics)
+				if err != nil {
+					e.logger.Error("Error performing data marshalling , could not convert to multi-json", zap.Error(err))
+				} else {
+					adxJsonMetricsBytes = adxJsonBytes
+				}
 			}
 		}
 	}
-	buf := new(bytes.Buffer)
-	r, w := io.Pipe()
-	go func() {
-		defer func(writer *io.PipeWriter) {
-			err := writer.Close()
-			if err != nil {
-				fmt.Printf("Failed to close writer %v", err)
-			}
-		}(w)
-		_, err := io.Copy(w, buf)
-		if err != nil {
-			fmt.Printf("Failed to copy io: %v", err)
-		}
-	}()
 
-	if _, err := e.ingest.FromReader(context.Background(), r, e.ingestoptions...); err != nil {
-		logger.Error("Error performing data ingestion.", zap.Error(err))
-		return err
+	if adxJsonMetricsBytes != nil {
+		r, w := io.Pipe()
+		go func() {
+			defer func(writer *io.PipeWriter) {
+				err := writer.Close()
+				if err != nil {
+					e.logger.Warn("Failed to close writer: ", zap.Error(err))
+				}
+			}(w)
+			_, err := io.Copy(w, bytes.NewReader(adxJsonMetricsBytes))
+			if err != nil {
+				e.logger.Warn("Failed to copy io ", zap.Error(err))
+			}
+		}()
+
+		if _, err := e.ingest.FromReader(context.Background(), r, e.ingestoptions...); err != nil {
+			e.logger.Error("Error performing data ingestion.", zap.Error(err))
+			return err
+		}
+	} else {
+		e.logger.Warn("Multi JSON buffer is empty , no records to process in the current batch")
 	}
 	return nil
 }
