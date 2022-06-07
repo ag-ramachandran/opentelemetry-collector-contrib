@@ -40,11 +40,11 @@ func (adxCfg *Config) Validate() error {
 	}
 
 	if isEmpty(adxCfg.ClusterName) || isEmpty(adxCfg.ClientId) || isEmpty(adxCfg.ClientSecret) || isEmpty(adxCfg.TenantId) {
-		return errors.New(`Mandatory configurations "cluster_name" ,"client_id" , "client_secret" and "tenant_id" are missing or empty `)
+		return errors.New(`mandatory configurations "cluster_name" ,"client_id" , "client_secret" and "tenant_id" are missing or empty `)
 	}
 	return nil
 }
 
 func isEmpty(str string) bool {
-	return strings.TrimSpace(str) != ""
+	return strings.TrimSpace(str) == ""
 }
