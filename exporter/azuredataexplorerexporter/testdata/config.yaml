@@ -38,8 +38,8 @@ service:
     traces:
       receivers: [nop]
       processors: [nop]
-      exporters: [azuredataexplorer]
+      exporters: [azuredataexplorer,azuredataexplorer/2]
     logs:
       receivers: [nop]
       processors: [nop]
-      exporters: [azuredataexplorer]
+      exporters: [azuredataexplorer,azuredataexplorer/2]
