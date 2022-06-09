@@ -31,7 +31,7 @@ const (
 	defaultHTTPTimeout = 10 * time.Second
 )
 
-// NewFactory creates a factory for Splunk HEC exporter.
+// Creates a factory for the ADX Exporter
 func NewFactory() component.ExporterFactory {
 	return component.NewExporterFactory(
 		typeStr,

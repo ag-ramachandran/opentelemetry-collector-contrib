@@ -3,6 +3,7 @@ package azuredataexplorerexporter
 import (
 	"fmt"
 	"math"
+	"os"
 	"strconv"
 	"time"
 
@@ -36,10 +37,10 @@ type AdxMetric struct {
 Convert the pMetric to the type ADXMetric , this matches the scheme in the RawMetric table in the database
 */
 
-func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, config *Config, logger *zap.Logger) []*AdxMetric {
+func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger) []*AdxMetric {
 	logger.Debug("Entering processing of toAdxMetric function")
-	// default to collectors host name
-	host := config.CollectorHostName
+	// default to collectors host name. Ignore the error here. This should not cause the failure of the process
+	host, _ := os.Hostname()
 	commonFields := map[string]interface{}{}
 
 	res.Attributes().Range(func(k string, v pcommon.Value) bool {

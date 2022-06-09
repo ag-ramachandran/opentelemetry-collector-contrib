@@ -31,7 +31,6 @@ import (
 
 // adxMetricsProducer uses the ADX client to perform ingestion
 type adxMetricsProducer struct {
-	config        *Config
 	client        *kusto.Client
 	ingest        *ingest.Ingestion
 	ingestoptions []ingest.FileOption
@@ -47,7 +46,7 @@ func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetri
 		for j := 0; j < scopeMetrics.Len(); j++ {
 			metrics := scopeMetrics.At(j).Metrics()
 			for k := 0; k < metrics.Len(); k++ {
-				adxMetrics := mapToAdxMetric(res, metrics.At(k), e.config, e.logger)
+				adxMetrics := mapToAdxMetric(res, metrics.At(k), e.logger)
 				adxJsonBytes, err := jsoniter.Marshal(adxMetrics)
 				if err != nil {
 					e.logger.Error("Error performing data marshalling , could not convert to multi-json", zap.Error(err))
@@ -108,7 +107,6 @@ func newMetricsExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer
 	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawMetricTable)), ingest.MultiJSON)
 
 	return &adxMetricsProducer{
-		config:        config,
 		client:        metricclient,
 		ingest:        metricingest,
 		ingestoptions: ingestoptions,
