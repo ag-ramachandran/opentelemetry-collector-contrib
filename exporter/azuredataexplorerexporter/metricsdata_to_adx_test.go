@@ -39,7 +39,7 @@ func Test_mapToAdxMetric(t *testing.T) {
 		configFn           func() *Config
 	}{
 		{
-			name: "simple_counter",
+			name: "simple_counter_with_double_value",
 			resourceFn: func() pcommon.Resource {
 				return newMetricsWithResources()
 			},
@@ -63,27 +63,54 @@ func Test_mapToAdxMetric(t *testing.T) {
 					MetricType: "Sum",
 					Value:      22.0,
 					Host:       "test-host",
-					Attributes: `{"k0":"v0","k1":"v1"}`,
+					Attributes: `{"key":"value"}`,
 				},
 			},
 		},
-		/*
-			{
-				name: "nil_gauge_value",
-				resourceFn: func() pcommon.Resource {
-					return newMetricsWithResources()
-				},
-				metricsDataFn: func() pmetric.Metric {
-					gauge := pmetric.NewMetric()
-					gauge.SetName("gauge_with_dims")
-					gauge.SetDataType(pmetric.MetricDataTypeGauge)
-					return gauge
-				},
-				configFn: func() *Config {
-					return createDefaultConfig().(*Config)
+		{
+			name: "simple_counter_with_int_value",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				sumV := pmetric.NewMetric()
+				sumV.SetName("int_counter_over_time")
+				sumV.SetDataType(pmetric.MetricDataTypeSum)
+				dp := sumV.Sum().DataPoints().AppendEmpty()
+				dp.SetDoubleVal(221)
+				dp.SetTimestamp(ts)
+				return sumV
+			},
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+
+			expectedAdxMetrics: []*AdxMetric{
+				{
+					Timestamp:  tstr,
+					MetricName: "int_counter_over_time",
+					MetricType: "Sum",
+					Value:      221,
+					Host:       "test-host",
+					Attributes: `{"key":"value"}`,
 				},
 			},
-		*/
+		},
+		{
+			name: "nil_counter",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				sumV := pmetric.NewMetric()
+				sumV.SetName("nil_counter_over_time")
+				sumV.SetDataType(pmetric.MetricDataTypeSum)
+				return sumV
+			},
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -100,35 +127,9 @@ func Test_mapToAdxMetric(t *testing.T) {
 	}
 }
 
-func getAdxMetrics(
-	metricName string,
-	ts *float64,
-	keys []string,
-	values []interface{},
-	val interface{},
-	source string,
-	host string,
-) []*AdxMetric {
-
-	fVal := float64(0)
-	adxMetrics := make([]*AdxMetric, 1)
-
-	adxMetrics[0] = &AdxMetric{
-		Timestamp:  "",
-		MetricName: "",
-		MetricType: "",
-		Value:      fVal,
-		Host:       "",
-		Attributes: "",
-	}
-	return adxMetrics
-
-}
-
 func newMetricsWithResources() pcommon.Resource {
 	res := pcommon.NewResource()
-	res.Attributes().InsertString("k0", "v0")
-	res.Attributes().InsertString("k1", "v1")
+	res.Attributes().InsertString("key", "value")
 	res.Attributes().InsertString(hostKey, "test-host")
 	return res
 }
