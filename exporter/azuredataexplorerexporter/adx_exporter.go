@@ -15,10 +15,8 @@
 package azuredataexplorerexporter // import "github.com/open-telemetry/opentelemetry-collector-contrib/exporter/azuredataexplorerexporter"
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/Azure/azure-kusto-go/kusto"
@@ -32,14 +30,14 @@ import (
 // adxMetricsProducer uses the ADX client to perform ingestion
 type adxMetricsProducer struct {
 	client        *kusto.Client
-	ingest        *ingest.Ingestion
+	ingest        *ingest.Managed
 	ingestoptions []ingest.FileOption
 	logger        *zap.Logger
 }
 
 func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetric.Metrics) error {
 	resourceMetric := metrics.ResourceMetrics()
-	var adxJsonMetricsBytes []byte
+	adxJsonIngestString := ""
 	for i := 0; i < resourceMetric.Len(); i++ {
 		res := resourceMetric.At(i).Resource()
 		scopeMetrics := resourceMetric.At(i).ScopeMetrics()
@@ -47,32 +45,18 @@ func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetri
 			metrics := scopeMetrics.At(j).Metrics()
 			for k := 0; k < metrics.Len(); k++ {
 				adxMetrics := mapToAdxMetric(res, metrics.At(k), e.logger)
-				adxJsonBytes, err := jsoniter.Marshal(adxMetrics)
+				adxJsonString, err := jsoniter.MarshalToString(adxMetrics)
 				if err != nil {
 					e.logger.Error("Error performing data marshalling , could not convert to multi-json", zap.Error(err))
 				} else {
-					adxJsonMetricsBytes = adxJsonBytes
+					adxJsonIngestString = adxJsonString
 				}
 			}
 		}
 	}
-
-	if adxJsonMetricsBytes != nil {
-		r, w := io.Pipe()
-		go func() {
-			defer func(writer *io.PipeWriter) {
-				err := writer.Close()
-				if err != nil {
-					e.logger.Warn("Failed to close writer: ", zap.Error(err))
-				}
-			}(w)
-			_, err := io.Copy(w, bytes.NewReader(adxJsonMetricsBytes))
-			if err != nil {
-				e.logger.Warn("Failed to copy io ", zap.Error(err))
-			}
-		}()
-
-		if _, err := e.ingest.FromReader(context.Background(), r, e.ingestoptions...); err != nil {
+	if adxJsonIngestString != "" {
+		ingestreader := strings.NewReader(adxJsonIngestString)
+		if _, err := e.ingest.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
 			e.logger.Error("Error performing data ingestion.", zap.Error(err))
 			return err
 		}
@@ -130,7 +114,8 @@ func buildAdxClient(config *Config) (*kusto.Client, error) {
 }
 
 // Depending on the table , create seperate ingesters
-func createIngester(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Ingestion, error) {
-	ingester, err := ingest.New(adxclient, config.Database, tablename)
+func createIngester(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Managed, error) {
+	//ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawMetricTable)), ingest.MultiJSON)
+	ingester, err := ingest.NewManaged(adxclient, config.Database, tablename)
 	return ingester, err
 }

@@ -25,12 +25,12 @@ const (
 )
 
 type AdxMetric struct {
-	Timestamp  string   //The timestamp of the occurance. A metric is measured at a point of time. Formatted into string as RFC3339
-	MetricName string   //Name of the metric field
-	MetricType string   // The type of the metric field
-	Value      *float64 // the value of the metric
-	Host       string   // the hostname for analysis of the metric
-	Attributes string   // JSON attributes that can then be parsed. Usually custom metrics
+	Timestamp  string  //The timestamp of the occurance. A metric is measured at a point of time. Formatted into string as RFC3339
+	MetricName string  //Name of the metric field
+	MetricType string  // The type of the metric field
+	Value      float64 // the value of the metric
+	Host       string  // the hostname for analysis of the metric
+	Attributes string  // JSON attributes that can then be parsed. Usually custom metrics
 }
 
 /*
@@ -78,7 +78,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 				Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 				MetricName: md.Name(),
 				MetricType: pmetric.MetricDataTypeGauge.String(),
-				Value:      &metricValue,
+				Value:      metricValue,
 				Host:       host,
 				Attributes: fieldsJson,
 			}
@@ -106,7 +106,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 					MetricName: fmt.Sprintf("%s_%s", md.Name(), sumSuffix),
 					MetricType: pmetric.MetricDataTypeHistogram.String(),
-					Value:      &metricValue,
+					Value:      metricValue,
 					Host:       host,
 					Attributes: fieldsJson,
 				})
@@ -125,7 +125,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 					MetricName: fmt.Sprintf("%s_%s", md.Name(), countSuffix),
 					MetricType: pmetric.MetricDataTypeHistogram.String(),
-					Value:      &metricValue,
+					Value:      metricValue,
 					Host:       host,
 					Attributes: fieldsJson,
 				})
@@ -156,7 +156,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 					MetricName: fmt.Sprintf("%s_bucket", md.Name()),
 					MetricType: pmetric.MetricDataTypeHistogram.String(),
-					Value:      &metricValue,
+					Value:      metricValue,
 					Host:       host,
 					Attributes: fieldsJson,
 				})
@@ -181,7 +181,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 					MetricName: fmt.Sprintf("%s_bucket", md.Name()),
 					MetricType: pmetric.MetricDataTypeHistogram.String(),
-					Value:      &metricValue,
+					Value:      metricValue,
 					Host:       host,
 					Attributes: fieldsJson,
 				})
@@ -213,8 +213,8 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 			adxMetrics[gi] = &AdxMetric{
 				Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 				MetricName: md.Name(),
-				MetricType: pmetric.MetricDataTypeHistogram.String(),
-				Value:      &metricValue,
+				MetricType: pmetric.MetricDataTypeSum.String(),
+				Value:      metricValue,
 				Host:       host,
 				Attributes: fieldsJson,
 			}
@@ -239,7 +239,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 					MetricName: fmt.Sprintf("%s_%s", md.Name(), sumSuffix),
 					MetricType: pmetric.MetricDataTypeSummary.String(),
-					Value:      &metricValue,
+					Value:      metricValue,
 					Host:       host,
 					Attributes: fieldsJson,
 				})
@@ -258,7 +258,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 					MetricName: fmt.Sprintf("%s_%s", md.Name(), countSuffix),
 					MetricType: pmetric.MetricDataTypeSummary.String(),
-					Value:      &metricValue,
+					Value:      metricValue,
 					Host:       host,
 					Attributes: fieldsJson,
 				})
@@ -282,7 +282,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
 					MetricName: fmt.Sprintf("%s_%s", md.Name(), countSuffix),
 					MetricType: pmetric.MetricDataTypeSummary.String(),
-					Value:      &metricValue,
+					Value:      metricValue,
 					Host:       host,
 					Attributes: fieldsJson,
 				})

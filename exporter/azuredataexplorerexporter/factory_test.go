@@ -33,6 +33,8 @@ func TestCreateDefaultConfig(t *testing.T) {
 	assert.NoError(t, configtest.CheckConfigStruct(cfg))
 }
 
+// Given a new factory and no-op exporter , the NewMetric exporter should work.
+// We could add additional failing tests if the config is wrong (using Validate) , but that is already done on config
 func TestCreateMetricsExporter(t *testing.T) {
 	factories, err := componenttest.NopFactories()
 	require.NoError(t, err)
