@@ -38,13 +38,14 @@ type adxMetricsProducer struct {
 func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetric.Metrics) error {
 	resourceMetric := metrics.ResourceMetrics()
 	adxJsonIngestString := ""
+	var adxMetrics []*AdxMetric
 	for i := 0; i < resourceMetric.Len(); i++ {
 		res := resourceMetric.At(i).Resource()
 		scopeMetrics := resourceMetric.At(i).ScopeMetrics()
 		for j := 0; j < scopeMetrics.Len(); j++ {
 			metrics := scopeMetrics.At(j).Metrics()
 			for k := 0; k < metrics.Len(); k++ {
-				adxMetrics := mapToAdxMetric(res, metrics.At(k), e.logger)
+				adxMetrics = append(adxMetrics, mapToAdxMetric(res, metrics.At(k), e.logger)...)
 				adxJsonString, err := jsoniter.MarshalToString(adxMetrics)
 				if err != nil {
 					e.logger.Error("Error performing data marshalling , could not convert to multi-json", zap.Error(err))
