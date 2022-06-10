@@ -149,7 +149,6 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 				if err != nil {
 					logger.Warn("Error marshalling attribute fields ", zap.Any("Attributes", fields), zap.Error(err))
 				}
-				populateAttributes(fields, dataPoint.Attributes())
 				// Change int to float. The value is a float64 in the table
 				metricValue := float64(value)
 				adxMetrics = append(adxMetrics, &AdxMetric{
@@ -169,13 +168,11 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 				// Add the LE field for the bucket's bound
 				fields["le"] = float64ToDimValue(math.Inf(1))
 				metricValue := float64(value + counts[len(counts)-1])
-
 				// there is an error case here as well! TODO need to atleast log it
 				fieldsJson, err := jsoniter.MarshalToString(fields)
 				if err != nil {
 					logger.Warn("Error marshalling attribute fields ", zap.Any("Attributes", fields), zap.Error(err))
 				}
-				populateAttributes(fields, dataPoint.Attributes())
 				// Change int to float. The value is a float64 in the table
 				adxMetrics = append(adxMetrics, &AdxMetric{
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),

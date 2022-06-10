@@ -16,6 +16,7 @@ package azuredataexplorerexporter // import "github.com/open-telemetry/opentelem
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"testing"
 	"time"
@@ -31,6 +32,9 @@ func Test_mapToAdxMetric(t *testing.T) {
 	ts := pcommon.NewTimestampFromTime(tsUnix)
 	tstr := ts.AsTime().Format(time.RFC3339)
 
+	distributionBounds := []float64{1, 2, 4}
+	distributionCounts := []uint64{4, 2, 3, 5}
+
 	tests := []struct {
 		name               string
 		resourceFn         func() pcommon.Resource
@@ -39,7 +43,7 @@ func Test_mapToAdxMetric(t *testing.T) {
 		configFn           func() *Config
 	}{
 		{
-			name: "simple_counter_with_double_value",
+			name: "counter_over_time",
 			resourceFn: func() pcommon.Resource {
 				return newMetricsWithResources()
 			},
@@ -68,7 +72,7 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "simple_counter_with_int_value",
+			name: "int_counter_over_time",
 			resourceFn: func() pcommon.Resource {
 				return newMetricsWithResources()
 			},
@@ -96,8 +100,9 @@ func Test_mapToAdxMetric(t *testing.T) {
 				},
 			},
 		},
+
 		{
-			name: "nil_counter",
+			name: "nil_counter_over_time",
 			resourceFn: func() pcommon.Resource {
 				return newMetricsWithResources()
 			},
@@ -111,6 +116,82 @@ func Test_mapToAdxMetric(t *testing.T) {
 				return createDefaultConfig().(*Config)
 			},
 		},
+		{
+			name: "simple_histogram_with_value",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				histogram := pmetric.NewMetric()
+				histogram.SetName("simple_histogram_with_value")
+				histogram.SetDataType(pmetric.MetricDataTypeHistogram)
+				histogramPt := histogram.Histogram().DataPoints().AppendEmpty()
+				histogramPt.SetMExplicitBounds(distributionBounds)
+				histogramPt.SetMBucketCounts(distributionCounts)
+				histogramPt.SetSum(23)  //
+				histogramPt.SetCount(7) // sum of distributionBounds
+				histogramPt.SetTimestamp(pcommon.NewTimestampFromTime(tsUnix))
+				return histogram
+			},
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+
+			expectedAdxMetrics: []*AdxMetric{
+				{
+					Timestamp:  tstr,
+					MetricName: "simple_histogram_with_value_sum",
+					MetricType: "Histogram",
+					Value:      23,
+					Host:       "test-host",
+					Attributes: `{"key":"value"}`,
+				},
+				{
+					Timestamp:  tstr,
+					MetricName: "simple_histogram_with_value_count",
+					MetricType: "Histogram",
+					Value:      7,
+					Host:       "test-host",
+					Attributes: `{"key":"value"}`,
+				},
+				//The list of buckets
+				{
+					Timestamp:  tstr,
+					MetricName: "simple_histogram_with_value_bucket",
+					MetricType: "Histogram",
+					Value:      4,
+					Host:       "test-host",
+					Attributes: `{"key":"value","le":"1"}`,
+				},
+
+				{
+					Timestamp:  tstr,
+					MetricName: "simple_histogram_with_value_bucket",
+					MetricType: "Histogram",
+					Value:      6,
+					Host:       "test-host",
+					Attributes: `{"key":"value","le":"2"}`,
+				},
+
+				{
+					Timestamp:  tstr,
+					MetricName: "simple_histogram_with_value_bucket",
+					MetricType: "Histogram",
+					Value:      9,
+					Host:       "test-host",
+					Attributes: `{"key":"value","le":"4"}`,
+				},
+
+				{
+					Timestamp:  tstr,
+					MetricName: "simple_histogram_with_value_bucket",
+					MetricType: "Histogram",
+					Value:      14, // Sum of distribution counts
+					Host:       "test-host",
+					Attributes: `{"key":"value","le":"+Inf"}`,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -118,8 +199,13 @@ func Test_mapToAdxMetric(t *testing.T) {
 			md := tt.metricsDataFn()
 			actualMetrics := mapToAdxMetric(res, md, zap.NewNop())
 			encoder := json.NewEncoder(ioutil.Discard)
-			for i, expected := range tt.expectedAdxMetrics {
-				assert.Equal(t, expected, actualMetrics[i])
+			for i, expectedMetric := range tt.expectedAdxMetrics {
+				assert.Equal(t, expectedMetric.MetricName, actualMetrics[i].MetricName)
+				assert.Equal(t, expectedMetric.MetricType, actualMetrics[i].MetricType)
+				assert.Equal(t, expectedMetric.Value, actualMetrics[i].Value, fmt.Sprintf("Mismatch for value for test %s", tt.name))
+				assert.Equal(t, expectedMetric.Host, actualMetrics[i].Host)
+				assert.Equal(t, expectedMetric.Timestamp, actualMetrics[i].Timestamp)
+				assert.JSONEq(t, expectedMetric.Attributes, actualMetrics[i].Attributes)
 				err := encoder.Encode(actualMetrics[i])
 				assert.NoError(t, err)
 			}
