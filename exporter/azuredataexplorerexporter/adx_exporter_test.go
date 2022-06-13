@@ -15,9 +15,17 @@
 package azuredataexplorerexporter
 
 import (
+	"context"
+	"fmt"
+	"strings"
 	"testing"
+	"time"
 
+	"github.com/Azure/azure-kusto-go/kusto"
+	"github.com/Azure/azure-kusto-go/kusto/ingest"
 	"github.com/stretchr/testify/assert"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.uber.org/zap/zaptest"
 )
 
@@ -33,4 +41,41 @@ func TestNewExporter_err_version(t *testing.T) {
 	texp, err := newMetricsExporter(&c, logger)
 	assert.Error(t, err)
 	assert.Nil(t, texp)
+}
+
+func TestMetricsDataPusher(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	kustoclient := kusto.NewMockClient()
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.MultiJSON)
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.MultiJSON)
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawMetrics")
+
+	adxMetricsProducer := &adxMetricsProducer{
+		client:        kustoclient,
+		ingest:        managedstreamingingest,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}
+	assert.NotNil(t, adxMetricsProducer)
+	err := adxMetricsProducer.metricsDataPusher(context.Background(), createMetricsData(10))
+	assert.NotNil(t, err)
+}
+
+func createMetricsData(numberOfDataPoints int) pmetric.Metrics {
+	doubleVal := 1234.5678
+	metrics := pmetric.NewMetrics()
+	rm := metrics.ResourceMetrics().AppendEmpty()
+	rm.Resource().Attributes().InsertString("k0", "v0")
+	for i := 0; i < numberOfDataPoints; i++ {
+		tsUnix := time.Unix(time.Now().Unix(), time.Now().UnixNano())
+		ilm := rm.ScopeMetrics().AppendEmpty()
+		metric := ilm.Metrics().AppendEmpty()
+		metric.SetName("gauge_double_with_dims")
+		metric.SetDataType(pmetric.MetricDataTypeGauge)
+		doublePt := metric.Gauge().DataPoints().AppendEmpty()
+		doublePt.SetTimestamp(pcommon.NewTimestampFromTime(tsUnix))
+		doublePt.SetDoubleVal(doubleVal)
+	}
+	return metrics
 }
