@@ -192,6 +192,180 @@ func Test_mapToAdxMetric(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "nil_gauge_value",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				gauge := pmetric.NewMetric()
+				gauge.SetName("nil_gauge_value")
+				gauge.SetDataType(pmetric.MetricDataTypeGauge)
+				return gauge
+			},
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+		},
+		{
+			name: "Int_gauge_value",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				gauge := pmetric.NewMetric()
+				gauge.SetName("Int_gauge_value")
+				gauge.SetDataType(pmetric.MetricDataTypeGauge)
+				dp := gauge.Gauge().DataPoints().AppendEmpty()
+				dp.SetTimestamp(pcommon.NewTimestampFromTime(tsUnix))
+				dp.SetIntVal(5)
+				return gauge
+			},
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+			expectedAdxMetrics: []*AdxMetric{
+				{
+					Timestamp:  tstr,
+					MetricName: "Int_gauge_value",
+					MetricType: "Gauge",
+					Value:      5,
+					Host:       "test-host",
+					Attributes: `{"key":"value"}`,
+				},
+			},
+		},
+		{
+			name: "Float_gauge_value",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				gauge := pmetric.NewMetric()
+				gauge.SetName("Float_gauge_value")
+				gauge.SetDataType(pmetric.MetricDataTypeGauge)
+				dp := gauge.Gauge().DataPoints().AppendEmpty()
+				dp.SetTimestamp(pcommon.NewTimestampFromTime(tsUnix))
+				dp.SetDoubleVal(5.32)
+				return gauge
+			},
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+			expectedAdxMetrics: []*AdxMetric{
+				{
+					Timestamp:  tstr,
+					MetricName: "Float_gauge_value",
+					MetricType: "Gauge",
+					Value:      float64(5.32),
+					Host:       "test-host",
+					Attributes: `{"key":"value"}`,
+				},
+			},
+		},
+		{
+			name: "summary",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				summary := pmetric.NewMetric()
+				summary.SetName("summary")
+				summary.SetDataType(pmetric.MetricDataTypeSummary)
+				summaryPt := summary.Summary().DataPoints().AppendEmpty()
+				summaryPt.SetTimestamp(ts)
+				summaryPt.SetStartTimestamp(ts)
+				summaryPt.SetCount(2)
+				summaryPt.SetSum(42)
+				qt1 := summaryPt.QuantileValues().AppendEmpty()
+				qt1.SetQuantile(0.5)
+				qt1.SetValue(34)
+				qt2 := summaryPt.QuantileValues().AppendEmpty()
+				qt2.SetQuantile(0.6)
+				qt2.SetValue(45)
+				return summary
+			},
+			expectedAdxMetrics: []*AdxMetric{
+				{
+					Timestamp:  tstr,
+					MetricName: "summary_sum",
+					MetricType: "Summary",
+					Value:      float64(42),
+					Host:       "test-host",
+					Attributes: `{"key":"value"}`,
+				},
+				{
+					Timestamp:  tstr,
+					MetricName: "summary_count",
+					MetricType: "Summary",
+					Value:      float64(2),
+					Host:       "test-host",
+					Attributes: `{"key":"value"}`,
+				},
+				{
+					Timestamp:  tstr,
+					MetricName: "summary_0.5",
+					MetricType: "Summary",
+					Value:      float64(34),
+					Host:       "test-host",
+					Attributes: `{"key":"value","qt": "0.5","summary_0.5": 34}`,
+				},
+				{
+					Timestamp:  tstr,
+					MetricName: "summary_0.6",
+					MetricType: "Summary",
+					Value:      float64(45),
+					Host:       "test-host",
+					Attributes: `{"key":"value","qt": "0.6","summary_0.6": 45}`,
+				},
+			},
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+		},
+		{
+			name: "nil_summary",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				summary := pmetric.NewMetric()
+				summary.SetName("nil_summary")
+				summary.SetDataType(pmetric.MetricDataTypeSummary)
+				summaryPt := summary.Summary().DataPoints().AppendEmpty()
+				summaryPt.SetTimestamp(ts)
+				summaryPt.SetStartTimestamp(ts)
+				summaryPt.SetCount(2)
+				summaryPt.SetSum(42)
+				qt1 := summaryPt.QuantileValues().AppendEmpty()
+				qt1.SetQuantile(0.5)
+				qt1.SetValue(34)
+				qt2 := summaryPt.QuantileValues().AppendEmpty()
+				qt2.SetQuantile(0.6)
+				qt2.SetValue(45)
+				return summary
+			},
+			expectedAdxMetrics: nil,
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+		},
+		{
+			name: "unknown_type",
+			resourceFn: func() pcommon.Resource {
+				return newMetricsWithResources()
+			},
+			metricsDataFn: func() pmetric.Metric {
+				metric := pmetric.NewMetric()
+				metric.SetName("unknown_with_dims")
+				metric.SetDataType(pmetric.MetricDataTypeNone)
+				return metric
+			},
+			expectedAdxMetrics: nil,
+			configFn: func() *Config {
+				return createDefaultConfig().(*Config)
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

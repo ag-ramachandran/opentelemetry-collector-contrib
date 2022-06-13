@@ -274,10 +274,10 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, logger *zap.Logger)
 				if err != nil {
 					logger.Warn("Error marshalling attribute fields ", zap.Any("Attributes", fields), zap.Error(err))
 				}
-				metricValue := float64(dataPoint.Count())
+				metricValue := dp.Value()
 				adxMetrics = append(adxMetrics, &AdxMetric{
 					Timestamp:  dataPoint.Timestamp().AsTime().Format(time.RFC3339),
-					MetricName: fmt.Sprintf("%s_%s", md.Name(), countSuffix),
+					MetricName: fmt.Sprintf("%s_%s", md.Name(), strconv.FormatFloat(dp.Quantile(), 'f', -1, 64)),
 					MetricType: pmetric.MetricDataTypeSummary.String(),
 					Value:      metricValue,
 					Host:       host,
