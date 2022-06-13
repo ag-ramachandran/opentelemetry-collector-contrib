@@ -208,7 +208,7 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "Int_gauge_value",
+			name: "int_gauge_value",
 			resourceFn: func() pcommon.Resource {
 				return newMetricsWithResources()
 			},
@@ -236,7 +236,7 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "Float_gauge_value",
+			name: "float_gauge_value",
 			resourceFn: func() pcommon.Resource {
 				return newMetricsWithResources()
 			},
