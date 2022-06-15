@@ -24,6 +24,7 @@ import (
 	"github.com/Azure/azure-kusto-go/kusto/ingest"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
 	jsoniter "github.com/json-iterator/go"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.uber.org/zap"
 )
@@ -71,6 +72,50 @@ func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetri
 	return nil
 }
 
+func (e *adxMetricsProducer) logsDataPusher(ctx context.Context, logData plog.Logs) error {
+	resourceLogs := logData.ResourceLogs()
+	for i := 0; i < resourceLogs.Len(); i++ {
+		resource := resourceLogs.At(i)
+		scopeLogs := resourceLogs.At(i).ScopeLogs()
+		for j := 0; j < scopeLogs.Len(); j++ {
+			scope := scopeLogs.At(j)
+			logs := scopeLogs.At(j).LogRecords()
+
+			for k := 0; k < logs.Len(); k++ {
+				logData := logs.At(k)
+				transformedAdxLog := mapToAdxLog(resource.Resource(), scope.Scope(), logData, e.logger)
+				adxLogJsonBytes, err := jsoniter.Marshal(transformedAdxLog)
+				if err != nil {
+					e.logger.Error("Error performing serialization of data.", zap.Error(err))
+				}
+
+				if err = e.ingestData(adxLogJsonBytes); err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+	return nil
+}
+
+func (e *adxMetricsProducer) ingestData(b []byte) error {
+
+	ingestreader := bytes.NewReader(b)
+	if e.managedingest != nil {
+		if _, err := e.managedingest.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
+			e.logger.Error("Error performing managed data ingestion.", zap.Error(err))
+			return err
+		}
+	} else {
+		if _, err := e.queuedingest.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
+			e.logger.Error("Error performing queued data ingestion.", zap.Error(err))
+			return err
+		}
+	}
+	return nil
+}
+
 func (amp *adxMetricsProducer) Close(context.Context) error {
 	return amp.managedingest.Close()
 }
@@ -113,6 +158,52 @@ func newMetricsExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer
 	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawMetricTable)), ingest.JSON)
 	return &adxMetricsProducer{
 		client:        metricclient,
+		managedingest: managedingest,
+		queuedingest:  queuedingest,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}, nil
+
+}
+
+/*
+Create a Logs exporter. The Log exporter instantiates a client , creates the ingester and then sends data through it
+*/
+func newLogsExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer, error) {
+	logclient, err := buildAdxClient(config)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var managedingest *ingest.Managed
+	var queuedingest *ingest.Ingestion
+
+	// The exporter could be configured to run in either modes. Using managedstreaming or batched queueing
+	if strings.ToLower(config.IngestionType) == managedingesttype {
+		mi, err := createManagedStreamingIngester(config, logclient, config.RawLogTable)
+		if err != nil {
+			return nil, err
+		}
+
+		managedingest = mi
+		queuedingest = nil
+		err = nil
+	} else {
+		qi, err := createQueuedIngester(config, logclient, config.RawLogTable)
+		if err != nil {
+			return nil, err
+		}
+		managedingest = nil
+		queuedingest = qi
+		err = nil
+	}
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	// Expect that this mapping is alreay existent
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawLogTable)), ingest.JSON)
+	return &adxMetricsProducer{
+		client:        logclient,
 		managedingest: managedingest,
 		queuedingest:  queuedingest,
 		ingestoptions: ingestoptions,

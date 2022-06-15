@@ -30,6 +30,7 @@ type Config struct {
 	TenantId                string `mapstructure:"tenant_id"`
 	Database                string `mapstructure:"db_name"`
 	RawMetricTable          string `mapstructure:"metrics_table_name"`
+	RawLogTable             string `mapstructure:"logs_table_name"`
 	IngestionType           string `mapstructure:"ingestion_type"`
 }
 

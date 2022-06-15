@@ -38,9 +38,11 @@ func NewFactory() component.ExporterFactory {
 		createDefaultConfig,
 		component.WithTracesExporter(createTracesExporter),
 		component.WithMetricsExporter(createMetricsExporter),
-		component.WithLogsExporter(createLogsExporter))
+		component.WithLogsExporter(createLogsExporter),
+	)
 }
 
+/*Create default configurations*/
 func createDefaultConfig() config.Exporter {
 	return &Config{
 		ClusterName:    "https://CLUSTER.kusto.windows.net",
@@ -49,6 +51,7 @@ func createDefaultConfig() config.Exporter {
 		TenantId:       unknown,
 		Database:       unknown,
 		RawMetricTable: unknown,
+		RawLogTable:    "RawLogsData",
 		IngestionType:  queuedingesttest,
 	}
 }
@@ -101,6 +104,31 @@ func createLogsExporter(
 	_ context.Context,
 	set component.ExporterCreateSettings,
 	config config.Exporter,
-) (exporter component.LogsExporter, err error) {
-	return nil, nil
+) (exp component.LogsExporter, err error) {
+	adxCfg := config.(*Config)
+	// In case the ingestion type is not set , it falls back to queued ingestion.
+	// This form of ingestion is always available on all clusters
+	if adxCfg.IngestionType == "" {
+		set.Logger.Warn("Ingestion type is not set , will be defaulted to queued ingestion")
+		adxCfg.IngestionType = queuedingesttest
+	}
+	// call the common exporter function in baseexporter. This ensures that the client and the ingest
+	// are initialized and the metrics struct are available for operations
+	amp, err := newLogsExporter(adxCfg, set.Logger)
+
+	if err != nil {
+		return nil, err
+	}
+
+	exporter, err := exporterhelper.NewLogsExporter(
+		adxCfg,
+		set,
+		amp.logsDataPusher,
+		exporterhelper.WithTimeout(exporterhelper.TimeoutSettings{Timeout: 0}),
+		exporterhelper.WithShutdown(amp.Close))
+
+	if err != nil {
+		return nil, err
+	}
+	return exporter, nil
 }

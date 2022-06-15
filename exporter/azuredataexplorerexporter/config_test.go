@@ -52,6 +52,7 @@ func TestLoadConfig(t *testing.T) {
 			TenantId:       "21ff9e36-fbaa-43c8-98ba-00431ea10bc3",
 			Database:       "oteldb",
 			RawMetricTable: "RawMetrics",
+			RawLogTable:    "RawLogs",
 			IngestionType:  managedingesttype,
 		},
 		exporter)
