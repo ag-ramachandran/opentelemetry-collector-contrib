@@ -26,6 +26,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
 )
 
@@ -40,6 +41,8 @@ type adxMetricsProducer struct {
 
 func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetric.Metrics) error {
 	resourceMetric := metrics.ResourceMetrics()
+	metricsByteArray := make([]byte, 0)
+	nextline := []byte("\n")
 	for i := 0; i < resourceMetric.Len(); i++ {
 		res := resourceMetric.At(i).Resource()
 		scopeMetrics := resourceMetric.At(i).ScopeMetrics()
@@ -49,22 +52,18 @@ func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetri
 				transformedadxmetrics := mapToAdxMetric(res, metrics.At(k), e.logger)
 				for tm := 0; tm < len(transformedadxmetrics); tm++ {
 					adxmetricjsonbytes, err := jsoniter.Marshal(transformedadxmetrics[tm])
+					adxmetricjsonbytes = append(adxmetricjsonbytes, nextline...)
 					if err != nil {
 						e.logger.Error("Error performing serialization of data.", zap.Error(err))
 					}
-					ingestreader := bytes.NewReader(adxmetricjsonbytes)
-					if e.managedingest != nil {
-						if _, err := e.managedingest.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
-							e.logger.Error("Error performing managed data ingestion.", zap.Error(err))
-							return err
-						}
-					} else {
-						if _, err := e.queuedingest.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
-							e.logger.Error("Error performing queued data ingestion.", zap.Error(err))
-							return err
-						}
-					}
+					metricsByteArray = append(metricsByteArray, adxmetricjsonbytes...)
 
+				}
+				if len(metricsByteArray) != 0 {
+					if err := e.ingestData(metricsByteArray); err != nil {
+						return err
+					}
+					metricsByteArray = metricsByteArray[:0]
 				}
 			}
 		}
@@ -74,6 +73,8 @@ func (e *adxMetricsProducer) metricsDataPusher(_ context.Context, metrics pmetri
 
 func (e *adxMetricsProducer) logsDataPusher(ctx context.Context, logData plog.Logs) error {
 	resourceLogs := logData.ResourceLogs()
+	logsArray := make([]byte, 0)
+	nextline := []byte("\n")
 	for i := 0; i < resourceLogs.Len(); i++ {
 		resource := resourceLogs.At(i)
 		scopeLogs := resourceLogs.At(i).ScopeLogs()
@@ -85,14 +86,51 @@ func (e *adxMetricsProducer) logsDataPusher(ctx context.Context, logData plog.Lo
 				logData := logs.At(k)
 				transformedAdxLog := mapToAdxLog(resource.Resource(), scope.Scope(), logData, e.logger)
 				adxLogJsonBytes, err := jsoniter.Marshal(transformedAdxLog)
+				adxLogJsonBytes = append(adxLogJsonBytes, nextline...)
 				if err != nil {
 					e.logger.Error("Error performing serialization of data.", zap.Error(err))
 				}
+				logsArray = append(logsArray, adxLogJsonBytes...)
 
-				if err = e.ingestData(adxLogJsonBytes); err != nil {
+			}
+			if len(logsArray) != 0 {
+				if err := e.ingestData(logsArray); err != nil {
 					return err
 				}
+				logsArray = logsArray[:0]
+			}
+		}
+	}
+	return nil
+}
 
+func (e *adxMetricsProducer) tracesDataPusher(ctx context.Context, traceData ptrace.Traces) error {
+	resourceSpans := traceData.ResourceSpans()
+	spanDataArray := make([]byte, 0)
+	nextline := []byte("\n")
+	for i := 0; i < resourceSpans.Len(); i++ {
+		resource := resourceSpans.At(i)
+		ScopeSpans := resourceSpans.At(i).ScopeSpans()
+		for j := 0; j < ScopeSpans.Len(); j++ {
+			scope := ScopeSpans.At(j)
+			spans := ScopeSpans.At(j).Spans()
+
+			for k := 0; k < spans.Len(); k++ {
+				spanData := spans.At(k)
+				transformedAdxTrace := mapToAdxTrace(resource.Resource(), scope.Scope(), spanData, e.logger)
+				adxTraceJsonBytes, err := jsoniter.Marshal(transformedAdxTrace)
+				adxTraceJsonBytes = append(adxTraceJsonBytes, nextline...)
+				if err != nil {
+					e.logger.Error("Error performing serialization of data.", zap.Error(err))
+				}
+				spanDataArray = append(spanDataArray, adxTraceJsonBytes...)
+
+			}
+			if len(spanDataArray) != 0 {
+				if err := e.ingestData(spanDataArray); err != nil {
+					return err
+				}
+				spanDataArray = spanDataArray[:0]
 			}
 		}
 	}
@@ -204,6 +242,52 @@ func newLogsExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer, e
 	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawLogTable)), ingest.JSON)
 	return &adxMetricsProducer{
 		client:        logclient,
+		managedingest: managedingest,
+		queuedingest:  queuedingest,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}, nil
+
+}
+
+/*
+Create a Traces exporter. The Traces exporter instantiates a client , creates the ingester and then sends data through it
+*/
+func newTracesExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer, error) {
+	traceClient, err := buildAdxClient(config)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var managedingest *ingest.Managed
+	var queuedingest *ingest.Ingestion
+
+	// The exporter could be configured to run in either modes. Using managedstreaming or batched queueing
+	if strings.ToLower(config.IngestionType) == managedingesttype {
+		mi, err := createManagedStreamingIngester(config, traceClient, config.RawLogTable)
+		if err != nil {
+			return nil, err
+		}
+
+		managedingest = mi
+		queuedingest = nil
+		err = nil
+	} else {
+		qi, err := createQueuedIngester(config, traceClient, config.RawTraceTable)
+		if err != nil {
+			return nil, err
+		}
+		managedingest = nil
+		queuedingest = qi
+		err = nil
+	}
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	// Expect that this mapping is alreay existent
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawLogTable)), ingest.JSON)
+	return &adxMetricsProducer{
+		client:        traceClient,
 		managedingest: managedingest,
 		queuedingest:  queuedingest,
 		ingestoptions: ingestoptions,

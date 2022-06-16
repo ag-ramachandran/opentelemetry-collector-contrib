@@ -53,6 +53,7 @@ func TestLoadConfig(t *testing.T) {
 			Database:       "oteldb",
 			RawMetricTable: "RawMetrics",
 			RawLogTable:    "RawLogs",
+			RawTraceTable:  "RawTraces",
 			IngestionType:  managedingesttype,
 		},
 		exporter)

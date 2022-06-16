@@ -52,6 +52,7 @@ func createDefaultConfig() config.Exporter {
 		Database:       unknown,
 		RawMetricTable: unknown,
 		RawLogTable:    "RawLogs",
+		RawTraceTable:  "RawTraces",
 		IngestionType:  queuedingesttest,
 	}
 }
@@ -97,7 +98,32 @@ func createTracesExporter(
 	set component.ExporterCreateSettings,
 	config config.Exporter,
 ) (component.TracesExporter, error) {
-	return nil, nil
+	adxCfg := config.(*Config)
+	// In case the ingestion type is not set , it falls back to queued ingestion.
+	// This form of ingestion is always available on all clusters
+	if adxCfg.IngestionType == "" {
+		set.Logger.Warn("Ingestion type is not set , will be defaulted to queued ingestion")
+		adxCfg.IngestionType = queuedingesttest
+	}
+	// call the common exporter function in baseexporter. This ensures that the client and the ingest
+	// are initialized and the metrics struct are available for operations
+	amp, err := newTracesExporter(adxCfg, set.Logger)
+
+	if err != nil {
+		return nil, err
+	}
+
+	exporter, err := exporterhelper.NewTracesExporter(
+		adxCfg,
+		set,
+		amp.tracesDataPusher,
+		exporterhelper.WithTimeout(exporterhelper.TimeoutSettings{Timeout: 0}),
+		exporterhelper.WithShutdown(amp.Close))
+
+	if err != nil {
+		return nil, err
+	}
+	return exporter, nil
 }
 
 func createLogsExporter(
