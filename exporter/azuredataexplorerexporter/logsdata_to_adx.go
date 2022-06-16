@@ -16,9 +16,9 @@ type AdxLog struct {
 	SeverityText         string                 //The severity level of the log
 	SeverityNumber       int32                  //The severity number associated to the log
 	Body                 string                 //The body/Text of the log
-	ResourceData         map[string]interface{} //JSON Resource attributes that can then be parsed.
+	ResourceAttributes   map[string]interface{} //JSON Resource attributes that can then be parsed.
 	InstrumentationScope map[string]string      //Scope data for the log
-	Attributes           map[string]interface{} //JSON attributes that can then be parsed.
+	LogsAttributes       map[string]interface{} //JSON attributes that can then be parsed.
 }
 
 var LogsSeverityNumberMapper = map[string]int32{
@@ -62,9 +62,9 @@ func mapToAdxLog(resource pcommon.Resource, scope pcommon.InstrumentationScope, 
 		SeverityText:         logData.SeverityText(),
 		SeverityNumber:       int32(logData.SeverityNumber()),
 		Body:                 logData.Body().AsString(),
-		ResourceData:         resource.Attributes().AsRaw(),
+		ResourceAttributes:   resource.Attributes().AsRaw(),
 		InstrumentationScope: getScopeMap(scope),
-		Attributes:           logData.Attributes().AsRaw(),
+		LogsAttributes:       logData.Attributes().AsRaw(),
 	}
 	return adxLog
 }
