@@ -1,7 +1,6 @@
 package azuredataexplorerexporter
 
 import (
-	"fmt"
 	"time"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -61,7 +60,7 @@ func mapToAdxLog(resource pcommon.Resource, scope pcommon.InstrumentationScope, 
 		TraceId:              logData.TraceID().HexString(),
 		SpanId:               logData.SpanID().HexString(),
 		SeverityText:         logData.SeverityText(),
-		SeverityNumber:       getParsedSeverityNumber(logData.SeverityNumber().String()),
+		SeverityNumber:       int32(logData.SeverityNumber()),
 		Body:                 logData.Body().AsString(),
 		ResourceData:         resource.Attributes().AsRaw(),
 		InstrumentationScope: getScopeMap(scope),
@@ -70,14 +69,12 @@ func mapToAdxLog(resource pcommon.Resource, scope pcommon.InstrumentationScope, 
 	return adxLog
 }
 
-func getParsedSeverityNumber(s string) int32 {
-	fmt.Println("#####______________--------------- >>>>>>>>>>> SEVER :", s)
-	return LogsSeverityNumberMapper[s]
-}
-
 func getScopeMap(sc pcommon.InstrumentationScope) map[string]string {
-	return map[string]string{
-		"name":    sc.Name(),
-		"version": sc.Version(),
+	if sc.Name() != "" || sc.Version() != "" {
+		return map[string]string{
+			"name":    sc.Name(),
+			"version": sc.Version(),
+		}
 	}
+	return map[string]string{}
 }

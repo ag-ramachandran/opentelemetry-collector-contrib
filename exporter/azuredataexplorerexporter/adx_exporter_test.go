@@ -26,6 +26,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.uber.org/zap/zaptest"
 )
@@ -38,6 +39,7 @@ func TestNewExporter_err_version(t *testing.T) {
 		TenantId:       "unknown",
 		Database:       "not-configured",
 		RawMetricTable: "not-configured",
+		RawLogTable:    "RawLogs",
 	}
 	texp, err := newMetricsExporter(&c, logger)
 	assert.Error(t, err)
@@ -48,8 +50,8 @@ func TestMetricsDataPusher(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
 	ingestoptions := make([]ingest.FileOption, 2)
-	ingestoptions[0] = ingest.FileFormat(ingest.MultiJSON)
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.MultiJSON)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.JSON)
 	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawMetrics")
 
 	adxMetricsProducer := &adxMetricsProducer{
@@ -63,6 +65,48 @@ func TestMetricsDataPusher(t *testing.T) {
 	assert.NotNil(t, err)
 	//stmt := kusto.Stmt{"RawMetrics | take 10"}
 	//kustoclient.Query(context.Background(), "testDB", stmt)
+}
+
+func TestLogsDataPusher(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	kustoclient := kusto.NewMockClient()
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawLogs")), ingest.JSON)
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawLogs")
+
+	adxMetricsProducer := &adxMetricsProducer{
+		client:        kustoclient,
+		managedingest: managedstreamingingest,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}
+	assert.NotNil(t, adxMetricsProducer)
+	err := adxMetricsProducer.logsDataPusher(context.Background(), createLogsData())
+	assert.NotNil(t, err)
+}
+
+func createLogsData() plog.Logs {
+	spanId := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
+	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
+	tsUnix := time.Unix(time.Now().Unix(), time.Now().UnixNano())
+
+	logs := plog.NewLogs()
+	rm := logs.ResourceLogs().AppendEmpty()
+	rm.Resource().Attributes().InsertString("k0", "v0")
+	ism := rm.ScopeLogs().AppendEmpty()
+	ism.Scope().SetName("scopename")
+	ism.Scope().SetVersion("1.0")
+	log := ism.LogRecords().AppendEmpty()
+	log.Body().SetStringVal("mylogsample")
+	log.Attributes().InsertString("test", "value")
+	log.SetTimestamp(pcommon.NewTimestampFromTime(tsUnix))
+	log.SetSpanID(pcommon.NewSpanID(spanId))
+	log.SetTraceID(pcommon.NewTraceID(traceId))
+	log.SetSeverityNumber(plog.SeverityNumberDEBUG)
+	log.SetSeverityText("DEBUG")
+	return logs
+
 }
 
 func createMetricsData(numberOfDataPoints int) pmetric.Metrics {

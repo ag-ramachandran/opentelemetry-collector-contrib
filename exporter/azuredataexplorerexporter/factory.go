@@ -51,7 +51,7 @@ func createDefaultConfig() config.Exporter {
 		TenantId:       unknown,
 		Database:       unknown,
 		RawMetricTable: unknown,
-		RawLogTable:    "RawLogsData",
+		RawLogTable:    "RawLogs",
 		IngestionType:  queuedingesttest,
 	}
 }
