@@ -265,7 +265,7 @@ func newTracesExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer,
 
 	// The exporter could be configured to run in either modes. Using managedstreaming or batched queueing
 	if strings.ToLower(config.IngestionType) == managedingesttype {
-		mi, err := createManagedStreamingIngester(config, traceClient, config.RawLogTable)
+		mi, err := createManagedStreamingIngester(config, traceClient, config.RawTraceTable)
 		if err != nil {
 			return nil, err
 		}
@@ -285,7 +285,7 @@ func newTracesExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer,
 	ingestoptions := make([]ingest.FileOption, 2)
 	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
 	// Expect that this mapping is alreay existent
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawLogTable)), ingest.JSON)
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawTraceTable)), ingest.JSON)
 	return &adxMetricsProducer{
 		client:        traceClient,
 		managedingest: managedingest,
@@ -298,7 +298,6 @@ func newTracesExporter(config *Config, logger *zap.Logger) (*adxMetricsProducer,
 
 /**
 Common functions that are used by all the 3 parts of OTEL , namely Traces , Logs and Metrics
-
 */
 
 func buildAdxClient(config *Config) (*kusto.Client, error) {
