@@ -25,11 +25,16 @@ import (
 
 const (
 	// The value of "type" key in configuration.
-	typeStr           = "azuredataexplorer"
-	managedingesttype = "managed"
-	queuedingesttest  = "queued"
-	unknown           = "unknown"
-	MetricsType       = 1
+	typeStr            = "azuredataexplorer"
+	managedingesttype  = "managed"
+	queuedingesttest   = "queued"
+	unknown            = "unknown"
+	defaultmetrictable = "Rawmetrics"
+	defaultlogtable    = "RawLogs"
+	defaulttracetable  = "RawTraces"
+	MetricsType        = 1
+	LogsType           = 2
+	TracesType         = 3
 )
 
 // Creates a factory for the ADX Exporter
@@ -51,9 +56,9 @@ func createDefaultConfig() config.Exporter {
 		ClientSecret:   unknown,
 		TenantId:       unknown,
 		Database:       unknown,
-		RawMetricTable: unknown,
-		RawLogTable:    "RawLogs",
-		RawTraceTable:  "RawTraces",
+		RawMetricTable: defaultmetrictable,
+		RawLogTable:    defaultlogtable,
+		RawTraceTable:  defaulttracetable,
 		IngestionType:  queuedingesttest,
 	}
 }
@@ -108,7 +113,7 @@ func createTracesExporter(
 	}
 	// call the common exporter function in baseexporter. This ensures that the client and the ingest
 	// are initialized and the metrics struct are available for operations
-	amp, err := newTracesExporter(adxCfg, set.Logger)
+	amp, err := newExporter(adxCfg, set.Logger, LogsType)
 
 	if err != nil {
 		return nil, err
@@ -141,7 +146,7 @@ func createLogsExporter(
 	}
 	// call the common exporter function in baseexporter. This ensures that the client and the ingest
 	// are initialized and the metrics struct are available for operations
-	amp, err := newLogsExporter(adxCfg, set.Logger)
+	amp, err := newExporter(adxCfg, set.Logger, LogsType)
 
 	if err != nil {
 		return nil, err

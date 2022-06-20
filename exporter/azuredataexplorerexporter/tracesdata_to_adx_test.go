@@ -21,7 +21,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 	defaultTime := pcommon.NewTimestampFromTime(epoch).AsTime().Format(time.RFC3339)
 	tmap := make(map[string]interface{})
 	tmap["key"] = "value"
-	tmap[hostKey] = testhost
+	tmap[hostkey] = testhost
 
 	scpMap := map[string]string{
 		"name":    "testscope",
@@ -55,7 +55,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 				return span
 			},
 			resourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			insScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
@@ -123,7 +123,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 				return span
 			},
 			resourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			insScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()

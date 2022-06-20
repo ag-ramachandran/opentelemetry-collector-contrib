@@ -21,7 +21,7 @@ func Test_mapToAdxLog(t *testing.T) {
 	defaultTime := pcommon.NewTimestampFromTime(epoch).AsTime().Format(time.RFC3339)
 	tmap := make(map[string]interface{})
 	tmap["key"] = "value"
-	tmap[hostKey] = testhost
+	tmap[hostkey] = testhost
 
 	scpMap := map[string]string{
 		"name":    "testscope",
@@ -53,7 +53,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
@@ -86,7 +86,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
@@ -118,7 +118,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
@@ -156,7 +156,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
