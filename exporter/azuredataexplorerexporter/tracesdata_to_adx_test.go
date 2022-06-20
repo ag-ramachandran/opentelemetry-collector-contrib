@@ -1,7 +1,6 @@
 package azuredataexplorerexporter
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -14,9 +13,6 @@ import (
 
 func Test_mapToAdxTrace(t *testing.T) {
 	logger := zap.NewNop()
-	tsUnix := time.Unix(time.Now().Unix(), time.Now().UnixNano())
-	ts := pcommon.NewTimestampFromTime(tsUnix)
-	tstr := ts.AsTime().Format(time.RFC3339)
 	epoch, _ := time.Parse("2006-01-02T15:04:05Z07:00", "1970-01-01T00:00:00Z")
 	defaultTime := pcommon.NewTimestampFromTime(epoch).AsTime().Format(time.RFC3339)
 	tmap := make(map[string]interface{})
@@ -32,8 +28,8 @@ func Test_mapToAdxTrace(t *testing.T) {
 	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
 
 	tests := []struct {
-		name             string
-		spanDatafn       func() ptrace.Span
+		name             string             // name of the test
+		spanDatafn       func() ptrace.Span // function that generates the
 		resourceFn       func() pcommon.Resource
 		insScopeFn       func() pcommon.InstrumentationScope
 		expectedAdxTrace *AdxTrace
@@ -161,7 +157,6 @@ func Test_mapToAdxTrace(t *testing.T) {
 			want := tt.expectedAdxTrace
 			got := mapToAdxTrace(tt.resourceFn(), tt.insScopeFn(), tt.spanDatafn(), logger)
 			require.NotNil(t, got)
-			fmt.Println("-------------------->>>>>>>>> ", got)
 			assert.Equal(t, want, got)
 
 		})

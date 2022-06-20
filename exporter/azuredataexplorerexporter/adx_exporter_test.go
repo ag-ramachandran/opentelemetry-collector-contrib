@@ -26,7 +26,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap/zaptest"
 )
 
@@ -66,6 +68,44 @@ func TestMetricsDataPusher(t *testing.T) {
 	//kustoclient.Query(context.Background(), "testDB", stmt)
 }
 
+func TestLogsDataPusher(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	kustoclient := kusto.NewMockClient()
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawLogs")), ingest.JSON)
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawLogs")
+
+	adxMetricsProducer := &adxDataProducer{
+		client:        kustoclient,
+		managedingest: managedstreamingingest,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}
+	assert.NotNil(t, adxMetricsProducer)
+	err := adxMetricsProducer.logsDataPusher(context.Background(), createLogsData())
+	assert.NotNil(t, err)
+}
+
+func TestTracesDataPusher(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	kustoclient := kusto.NewMockClient()
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawLogs")), ingest.JSON)
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawLogs")
+
+	adxMetricsProducer := &adxDataProducer{
+		client:        kustoclient,
+		managedingest: managedstreamingingest,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}
+	assert.NotNil(t, adxMetricsProducer)
+	err := adxMetricsProducer.tracesDataPusher(context.Background(), createTracesData())
+	assert.NotNil(t, err)
+}
+
 func TestClose(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
@@ -100,4 +140,48 @@ func createMetricsData(numberOfDataPoints int) pmetric.Metrics {
 		doublePt.SetDoubleVal(doubleVal)
 	}
 	return metrics
+}
+
+func createLogsData() plog.Logs {
+	spanId := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
+	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
+
+	logs := plog.NewLogs()
+	rm := logs.ResourceLogs().AppendEmpty()
+	rm.Resource().Attributes().InsertString("k0", "v0")
+	ism := rm.ScopeLogs().AppendEmpty()
+	ism.Scope().SetName("scopename")
+	ism.Scope().SetVersion("1.0")
+	log := ism.LogRecords().AppendEmpty()
+	log.Body().SetStringVal("mylogsample")
+	log.Attributes().InsertString("test", "value")
+	log.SetTimestamp(ts)
+	log.SetSpanID(pcommon.NewSpanID(spanId))
+	log.SetTraceID(pcommon.NewTraceID(traceId))
+	log.SetSeverityNumber(plog.SeverityNumberDEBUG)
+	log.SetSeverityText("DEBUG")
+	return logs
+
+}
+
+func createTracesData() ptrace.Traces {
+	spanId := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
+	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
+
+	traces := ptrace.NewTraces()
+	rm := traces.ResourceSpans().AppendEmpty()
+	rm.Resource().Attributes().InsertString("host", "test")
+	ism := rm.ScopeSpans().AppendEmpty()
+	ism.Scope().SetName("Scopename")
+	ism.Scope().SetVersion("1.0")
+	span := ism.Spans().AppendEmpty()
+	span.SetName("spanname")
+	span.SetKind(ptrace.SpanKindServer)
+	span.SetStartTimestamp(ts)
+	span.SetEndTimestamp(ts)
+	span.SetSpanID(pcommon.NewSpanID(spanId))
+	span.SetTraceID(pcommon.NewTraceID(traceId))
+	span.SetTraceState(ptrace.TraceStateEmpty)
+	span.Attributes().InsertString("key", "val")
+	return traces
 }

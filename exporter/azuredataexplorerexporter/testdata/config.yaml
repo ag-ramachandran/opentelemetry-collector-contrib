@@ -18,6 +18,8 @@ exporters:
     db_name: "oteldb"
     # raw metric table name
     metrics_table_name: "RawMetrics"
+    # raw log table name
+    logs_table_name: "RawLogs"
      # raw traces table
     traces_table_name: "RawTraces"
     # type of ingestion managed or queued
@@ -35,6 +37,8 @@ exporters:
     db_name: "oteldb"
     # raw metric table name
     metrics_table_name: "RawMetrics"
+    # raw log table name
+    logs_table_name: "RawLogs"
      # raw traces table
     traces_table_name: "RawTraces"
     # type of ingestion managed or queued
@@ -52,6 +56,8 @@ exporters:
     db_name: "oteldb"
     # raw metric table name
     metrics_table_name: "RawMetrics"
+    # raw log table name
+    logs_table_name: "RawLogs"
     # raw traces table
     traces_table_name: "RawTraces"
     # type of ingestion managed or queued
