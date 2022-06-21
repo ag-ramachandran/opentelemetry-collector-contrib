@@ -25,6 +25,7 @@ import (
 	"github.com/Azure/azure-kusto-go/kusto/ingest"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
 	jsoniter "github.com/json-iterator/go"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
@@ -240,10 +241,27 @@ func createQueuedIngester(config *Config, adxclient *kusto.Client, tablename str
 	return ingester, err
 }
 
+func getScopeMap(sc pcommon.InstrumentationScope) map[string]string {
+	scopeMap := map[string]string{}
+
+	if sc.Name() != "" {
+		scopeMap["name"] = sc.Name()
+	}
+	if sc.Version() != "" {
+		scopeMap["version"] = sc.Version()
+	}
+
+	return scopeMap
+}
+
 func getTableName(config *Config, telemetrydatatype int) string {
 	switch telemetrydatatype {
 	case MetricsType:
 		return config.RawMetricTable
+	case LogsType:
+		return config.RawLogTable
+	case TracesType:
+		return config.RawTraceTable
 	}
 	return "unknown"
 }

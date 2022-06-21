@@ -41,16 +41,3 @@ func mapToAdxLog(resource pcommon.Resource, scope pcommon.InstrumentationScope, 
 	}
 	return adxLog
 }
-
-func getScopeMap(sc pcommon.InstrumentationScope) map[string]string {
-	scopeMap := map[string]string{}
-
-	if sc.Name() != "" {
-		scopeMap["name"] = sc.Name()
-	}
-	if sc.Version() != "" {
-		scopeMap["version"] = sc.Version()
-	}
-
-	return scopeMap
-}
