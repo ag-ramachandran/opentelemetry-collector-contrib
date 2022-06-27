@@ -14,14 +14,11 @@ import (
 
 func Test_mapToAdxLog(t *testing.T) {
 	logger := zap.NewNop()
-	tsUnix := time.Unix(time.Now().Unix(), time.Now().UnixNano())
-	ts := pcommon.NewTimestampFromTime(tsUnix)
-	tstr := ts.AsTime().Format(time.RFC3339)
 	epoch, _ := time.Parse("2006-01-02T15:04:05Z07:00", "1970-01-01T00:00:00Z")
 	defaultTime := pcommon.NewTimestampFromTime(epoch).AsTime().Format(time.RFC3339)
 	tmap := make(map[string]interface{})
 	tmap["key"] = "value"
-	tmap[hostKey] = testhost
+	tmap[hostkey] = testhost
 
 	scpMap := map[string]string{
 		"name":    "testscope",
@@ -32,8 +29,8 @@ func Test_mapToAdxLog(t *testing.T) {
 	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
 
 	tests := []struct {
-		name            string
-		logRecordFn     func() plog.LogRecord
+		name            string                // name of the test
+		logRecordFn     func() plog.LogRecord // function that generates the logs
 		logResourceFn   func() pcommon.Resource
 		logScopeFn      func() pcommon.InstrumentationScope
 		expectedAdxLogs []*AdxLog
@@ -53,7 +50,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
@@ -86,7 +83,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
@@ -118,7 +115,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()
@@ -156,7 +153,7 @@ func Test_mapToAdxLog(t *testing.T) {
 				return logRecord
 			},
 			logResourceFn: func() pcommon.Resource {
-				return newMetricsWithResources()
+				return newDummyResource()
 			},
 			logScopeFn: func() pcommon.InstrumentationScope {
 				return newScopeWithData()

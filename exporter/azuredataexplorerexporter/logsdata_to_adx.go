@@ -21,33 +21,6 @@ type AdxLog struct {
 	LogsAttributes       map[string]interface{} //JSON attributes that can then be parsed.
 }
 
-var LogsSeverityNumberMapper = map[string]int32{
-	"SEVERITY_NUMBER_TRACE":  1,
-	"SEVERITY_NUMBER_TRACE2": 2,
-	"SEVERITY_NUMBER_TRACE3": 3,
-	"SEVERITY_NUMBER_TRACE4": 4,
-	"SEVERITY_NUMBER_DEBUG":  5,
-	"SEVERITY_NUMBER_DEBUG2": 6,
-	"SEVERITY_NUMBER_DEBUG3": 7,
-	"SEVERITY_NUMBER_DEBUG4": 8,
-	"SEVERITY_NUMBER_INFO":   9,
-	"SEVERITY_NUMBER_INFO2":  10,
-	"SEVERITY_NUMBER_INFO3":  11,
-	"SEVERITY_NUMBER_INFO4":  12,
-	"SEVERITY_NUMBER_WARN":   13,
-	"SEVERITY_NUMBER_WARN2":  14,
-	"SEVERITY_NUMBER_WARN3":  15,
-	"SEVERITY_NUMBER_WARN4":  16,
-	"SEVERITY_NUMBER_ERROR":  17,
-	"SEVERITY_NUMBER_ERROR2": 18,
-	"SEVERITY_NUMBER_ERROR3": 19,
-	"SEVERITY_NUMBER_ERROR4": 20,
-	"SEVERITY_NUMBER_FATAL":  21,
-	"SEVERITY_NUMBER_FATAL2": 22,
-	"SEVERITY_NUMBER_FATAL3": 23,
-	"SEVERITY_NUMBER_FATAL4": 24,
-}
-
 /*
 Convert the plog to the type ADXLog, this matches the scheme in the Log table in the database
 */
@@ -67,14 +40,4 @@ func mapToAdxLog(resource pcommon.Resource, scope pcommon.InstrumentationScope, 
 		LogsAttributes:       logData.Attributes().AsRaw(),
 	}
 	return adxLog
-}
-
-func getScopeMap(sc pcommon.InstrumentationScope) map[string]string {
-	if sc.Name() != "" || sc.Version() != "" {
-		return map[string]string{
-			"name":    sc.Name(),
-			"version": sc.Version(),
-		}
-	}
-	return map[string]string{}
 }
