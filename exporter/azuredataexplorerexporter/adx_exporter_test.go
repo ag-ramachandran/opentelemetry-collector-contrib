@@ -35,14 +35,27 @@ import (
 func TestNewExporter(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	c := Config{ClusterName: "https://CLUSTER.kusto.windows.net",
-		ClientId:       "unknown",
-		ClientSecret:   "unknown",
-		TenantId:       "unknown",
-		Database:       "not-configured",
-		RawMetricTable: "not-configured",
-		RawLogTable:    "RawLogs",
+		ClientId:               "unknown",
+		ClientSecret:           "unknown",
+		TenantId:               "unknown",
+		Database:               "not-configured",
+		OTELMetricTable:        "not-configured",
+		OTELLogTable:           "RawLogs",
+		OTELTraceTable:         "RawTrace",
+		OTELMetricTableMapping: "not-configured_mapping",
+		OTELLogTableMapping:    "not-configured_mapping",
+		OTELTraceTableMapping:  "not-configured_mapping",
 	}
 	texp, err := newExporter(&c, logger, metricstype)
+	assert.Error(t, err)
+	assert.Nil(t, texp)
+	texp, err = newExporter(&c, logger, logstype)
+	assert.Error(t, err)
+	assert.Nil(t, texp)
+	texp, err = newExporter(&c, logger, tracestype)
+	assert.Error(t, err)
+	assert.Nil(t, texp)
+	texp, err = newExporter(&c, logger, 5)
 	assert.Error(t, err)
 	assert.Nil(t, texp)
 }
@@ -57,7 +70,7 @@ func TestMetricsDataPusherStreaming(t *testing.T) {
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
-		managedingest: managedstreamingingest,
+		ingestor:      managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
@@ -76,7 +89,7 @@ func TestMetricsDataPusherQueued(t *testing.T) {
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
-		queuedingest:  queuedingest,
+		ingestor:      queuedingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
@@ -97,7 +110,7 @@ func TestLogsDataPusher(t *testing.T) {
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
-		managedingest: managedstreamingingest,
+		ingestor:      managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
@@ -116,7 +129,7 @@ func TestTracesDataPusher(t *testing.T) {
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
-		managedingest: managedstreamingingest,
+		ingestor:      managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
@@ -135,7 +148,7 @@ func TestClose(t *testing.T) {
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
-		managedingest: managedstreamingingest,
+		ingestor:      managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}

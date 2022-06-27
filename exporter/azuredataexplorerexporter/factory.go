@@ -29,9 +29,10 @@ const (
 	managedingesttype  = "managed"
 	queuedingesttest   = "queued"
 	unknown            = "unknown"
-	defaultmetrictable = "Rawmetrics"
-	defaultlogtable    = "RawLogs"
-	defaulttracetable  = "RawTraces"
+	defaultmetrictable = "Appmetrics"
+	defaultlogtable    = "AppLogs"
+	defaulttracetable  = "AppTraces"
+	emptystring        = ""
 	metricstype        = 1
 	logstype           = 2
 	tracestype         = 3
@@ -51,15 +52,15 @@ func NewFactory() component.ExporterFactory {
 /*Create default configurations*/
 func createDefaultConfig() config.Exporter {
 	return &Config{
-		ClusterName:    "https://CLUSTER.kusto.windows.net",
-		ClientId:       unknown,
-		ClientSecret:   unknown,
-		TenantId:       unknown,
-		Database:       unknown,
-		RawMetricTable: defaultmetrictable,
-		RawLogTable:    defaultlogtable,
-		RawTraceTable:  defaulttracetable,
-		IngestionType:  queuedingesttest,
+		ClusterName:     "https://CLUSTER.kusto.windows.net",
+		ClientId:        unknown,
+		ClientSecret:    unknown,
+		TenantId:        unknown,
+		Database:        unknown,
+		OTELMetricTable: defaultmetrictable,
+		OTELLogTable:    defaultlogtable,
+		OTELTraceTable:  defaulttracetable,
+		IngestionType:   queuedingesttest,
 	}
 }
 

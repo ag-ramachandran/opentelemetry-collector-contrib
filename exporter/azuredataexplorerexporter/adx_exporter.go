@@ -17,7 +17,7 @@ package azuredataexplorerexporter // import "github.com/open-telemetry/opentelem
 import (
 	"bytes"
 	"context"
-	"fmt"
+	"io"
 	"strings"
 
 	"github.com/Azure/azure-kusto-go/kusto"
@@ -34,11 +34,17 @@ import (
 
 // adxDataProducer uses the ADX client to perform ingestion
 type adxDataProducer struct {
-	client        *kusto.Client       // client for logs , traces and metrics
-	managedingest *ingest.Managed     // managed ingestion for  logs, traces and metrics
-	queuedingest  *ingest.Ingestion   // queued ingestion for  logs, traces and metrics
+	client *kusto.Client // client for logs , traces and metrics
+	// managedingest *ingest.Managed   // managed ingestion for  logs, traces and metrics
+	// queuedingest  *ingest.Ingestion // queued ingestion for  logs, traces and metrics
+	ingestor      localIngestor
 	ingestoptions []ingest.FileOption // Options for the ingestion
 	logger        *zap.Logger         // Loggers for tracing the flow
+}
+
+type localIngestor interface {
+	FromReader(ctx context.Context, reader io.Reader, options ...ingest.FileOption) (*ingest.Result, error)
+	Close() error
 }
 
 var nextline = []byte("\n")
@@ -73,18 +79,11 @@ func (e *adxDataProducer) ingestData(b []byte) error {
 
 	ingestreader := bytes.NewReader(b)
 
-	// Either of the ingestion policy will be present according to the configuration provided, other will be nil
-	if e.managedingest != nil {
-		if _, err := e.managedingest.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
-			e.logger.Error("Error performing managed data ingestion.", zap.Error(err))
-			return err
-		}
-	} else {
-		if _, err := e.queuedingest.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
-			e.logger.Error("Error performing queued data ingestion.", zap.Error(err))
-			return err
-		}
+	if _, err := e.ingestor.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
+		e.logger.Error("Error performing managed data ingestion.", zap.Error(err))
+		return err
 	}
+
 	return nil
 }
 
@@ -151,13 +150,9 @@ func (e *adxDataProducer) tracesDataPusher(ctx context.Context, traceData ptrace
 func (amp *adxDataProducer) Close(context.Context) error {
 
 	var err error
-	if amp.managedingest != nil {
-		err = amp.managedingest.Close()
-		amp.logger.Info("Closed ManagedIngest")
-	} else {
-		err = amp.queuedingest.Close()
-		amp.logger.Info("Closed QueuedIngest")
-	}
+
+	err = amp.ingestor.Close()
+	amp.logger.Info("Closed Ingestor")
 	err2 := amp.client.Close()
 	if err == nil {
 		err = err2
@@ -171,7 +166,7 @@ func (amp *adxDataProducer) Close(context.Context) error {
 }
 
 /*
-Create an exporter. The exporter instantiates a client , creates the ingester and then sends data through it
+Create an exporter. The exporter instantiates a client , creates the ingestor and then sends data through it
 */
 func newExporter(config *Config, logger *zap.Logger, telemetrydatatype int) (*adxDataProducer, error) {
 	tablename := getTableName(config, telemetrydatatype)
@@ -181,36 +176,34 @@ func newExporter(config *Config, logger *zap.Logger, telemetrydatatype int) (*ad
 		return nil, err
 	}
 
-	var managedingest *ingest.Managed
-	var queuedingest *ingest.Ingestion
+	var ingestor localIngestor
 
-	// The exporter could be configured to run in either modes. Using managedstreaming or batched queueing
-	if strings.ToLower(config.IngestionType) == managedingesttype {
-		mi, err := createManagedStreamingIngester(config, metricclient, tablename)
-		if err != nil {
-			return nil, err
-		}
-		managedingest = mi
-		queuedingest = nil
-		err = nil
-	} else {
-		qi, err := createQueuedIngester(config, metricclient, tablename)
-		if err != nil {
-			return nil, err
-		}
-		managedingest = nil
-		queuedingest = qi
-		err = nil
-	}
-	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions := make([]ingest.FileOption, 1)
 	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
 	// Expect that this mapping is already existent
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(tablename)), ingest.JSON)
+	if refoption := getMappingRef(config, telemetrydatatype); refoption != nil {
+		ingestoptions = append(ingestoptions, refoption)
+	}
+	// The exporter could be configured to run in either modes. Using managedstreaming or batched queueing
+	if strings.ToLower(config.IngestionType) == managedingesttype {
+		mi, err := createManagedStreamingIngestor(config, metricclient, tablename)
+		if err != nil {
+			return nil, err
+		}
+		ingestor = mi
+		err = nil
+	} else {
+		qi, err := createQueuedIngestor(config, metricclient, tablename)
+		if err != nil {
+			return nil, err
+		}
+		ingestor = qi
+		err = nil
+	}
 	return &adxDataProducer{
 		client:        metricclient,
-		managedingest: managedingest,
-		queuedingest:  queuedingest,
 		ingestoptions: ingestoptions,
+		ingestor:      ingestor,
 		logger:        logger,
 	}, nil
 }
@@ -218,6 +211,35 @@ func newExporter(config *Config, logger *zap.Logger, telemetrydatatype int) (*ad
 /**
 Common functions that are used by all the 3 parts of OTEL , namely Traces , Logs and Metrics
 */
+
+/* Fetchs the coresponding ingetionRef if the mapping is provided*/
+func getMappingRef(config *Config, telemetrydatatype int) ingest.FileOption {
+	switch telemetrydatatype {
+	case metricstype:
+		{
+			if !isEmpty(config.OTELMetricTableMapping) {
+				return ingest.IngestionMappingRef(config.OTELMetricTableMapping, ingest.JSON)
+			}
+			break
+		}
+	case tracestype:
+		{
+			if !isEmpty(config.OTELTraceTableMapping) {
+				return ingest.IngestionMappingRef(config.OTELTraceTableMapping, ingest.JSON)
+			}
+			break
+		}
+
+	case logstype:
+		{
+			if !isEmpty(config.OTELLogTableMapping) {
+				return ingest.IngestionMappingRef(config.OTELLogTableMapping, ingest.JSON)
+			}
+			break
+		}
+	}
+	return nil
+}
 
 func buildAdxClient(config *Config) (*kusto.Client, error) {
 	authorizer := kusto.Authorization{
@@ -228,18 +250,16 @@ func buildAdxClient(config *Config) (*kusto.Client, error) {
 	return client, err
 }
 
-// Depending on the table , create seperate ingesters
-func createManagedStreamingIngester(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Managed, error) {
-	//ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawMetricTable)), ingest.MultiJSON)
-	ingester, err := ingest.NewManaged(adxclient, config.Database, tablename)
-	return ingester, err
+// Depending on the table , create seperate ingestors
+func createManagedStreamingIngestor(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Managed, error) {
+	ingestor, err := ingest.NewManaged(adxclient, config.Database, tablename)
+	return ingestor, err
 }
 
-// A queued ingester in case that is provided as the config option
-func createQueuedIngester(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Ingestion, error) {
-	//ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower(config.RawMetricTable)), ingest.MultiJSON)
-	ingester, err := ingest.New(adxclient, config.Database, tablename)
-	return ingester, err
+// A queued ingestor in case that is provided as the config option
+func createQueuedIngestor(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Ingestion, error) {
+	ingestor, err := ingest.New(adxclient, config.Database, tablename)
+	return ingestor, err
 }
 
 func getScopeMap(sc pcommon.InstrumentationScope) map[string]string {
@@ -258,11 +278,11 @@ func getScopeMap(sc pcommon.InstrumentationScope) map[string]string {
 func getTableName(config *Config, telemetrydatatype int) string {
 	switch telemetrydatatype {
 	case metricstype:
-		return config.RawMetricTable
+		return config.OTELMetricTable
 	case logstype:
-		return config.RawLogTable
+		return config.OTELLogTable
 	case tracestype:
-		return config.RawTraceTable
+		return config.OTELTraceTable
 	}
 	return "unknown"
 }
