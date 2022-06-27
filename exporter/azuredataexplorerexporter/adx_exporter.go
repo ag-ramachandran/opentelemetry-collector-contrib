@@ -58,8 +58,8 @@ func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric
 		return err
 	}
 	// Since the transform succeeded ,  using the option for ingestion ingest the data into ADX
-	for tm := 0; tm < len(transformedadxmetrics); tm++ {
-		adxmetricjsonbytes, err := jsoniter.Marshal(transformedadxmetrics[tm])
+	for _, tm := range transformedadxmetrics {
+		adxmetricjsonbytes, err := jsoniter.Marshal(tm)
 		if err != nil {
 			e.logger.Error("Error performing serialization of data.", zap.Error(err))
 		}
