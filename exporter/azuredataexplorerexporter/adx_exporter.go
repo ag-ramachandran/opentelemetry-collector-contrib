@@ -89,66 +89,60 @@ func (e *adxDataProducer) ingestData(b []byte) error {
 }
 
 func (e *adxDataProducer) logsDataPusher(ctx context.Context, logData plog.Logs) error {
-	resourceLogs := logData.ResourceLogs()
-	logsArray := make([]byte, 0)
-	nextline := []byte("\n")
-	for i := 0; i < resourceLogs.Len(); i++ {
-		resource := resourceLogs.At(i)
-		scopeLogs := resourceLogs.At(i).ScopeLogs()
-		for j := 0; j < scopeLogs.Len(); j++ {
-			scope := scopeLogs.At(j)
-			logs := scopeLogs.At(j).LogRecords()
-
+	resourcelogs := logData.ResourceLogs()
+	logsarray := make([]byte, 0)
+	for i := 0; i < resourcelogs.Len(); i++ {
+		resource := resourcelogs.At(i)
+		scopelogs := resourcelogs.At(i).ScopeLogs()
+		for j := 0; j < scopelogs.Len(); j++ {
+			scope := scopelogs.At(j)
+			logs := scopelogs.At(j).LogRecords()
 			for k := 0; k < logs.Len(); k++ {
-				logData := logs.At(k)
-				transformedAdxLog := mapToAdxLog(resource.Resource(), scope.Scope(), logData, e.logger)
-				adxLogJsonBytes, err := jsoniter.Marshal(transformedAdxLog)
-				adxLogJsonBytes = append(adxLogJsonBytes, nextline...)
+				logdata := logs.At(k)
+				transformedadxlog := mapToAdxLog(resource.Resource(), scope.Scope(), logdata, e.logger)
+				adxlogjsonbytes, err := jsoniter.Marshal(transformedadxlog)
 				if err != nil {
 					e.logger.Error("Error performing serialization of data.", zap.Error(err))
 				}
-				logsArray = append(logsArray, adxLogJsonBytes...)
+				logsarray = bytes.Join([][]byte{logsarray, adxlogjsonbytes}, nextline)
 
 			}
-			if len(logsArray) != 0 {
-				if err := e.ingestData(logsArray); err != nil {
-					return err
-				}
-				logsArray = logsArray[:0]
-			}
+		}
+	}
+	if len(logsarray) != 0 {
+		if err := e.ingestData(logsarray); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
 func (e *adxDataProducer) tracesDataPusher(ctx context.Context, traceData ptrace.Traces) error {
-	resourceSpans := traceData.ResourceSpans()
-	spanDataArray := make([]byte, 0)
-	nextline := []byte("\n")
-	for i := 0; i < resourceSpans.Len(); i++ {
-		resource := resourceSpans.At(i)
-		ScopeSpans := resourceSpans.At(i).ScopeSpans()
-		for j := 0; j < ScopeSpans.Len(); j++ {
-			scope := ScopeSpans.At(j)
-			spans := ScopeSpans.At(j).Spans()
-
+	resourcespans := traceData.ResourceSpans()
+	spandataarray := make([]byte, 0)
+	for i := 0; i < resourcespans.Len(); i++ {
+		resource := resourcespans.At(i)
+		scopespans := resourcespans.At(i).ScopeSpans()
+		for j := 0; j < scopespans.Len(); j++ {
+			scope := scopespans.At(j)
+			spans := scopespans.At(j).Spans()
 			for k := 0; k < spans.Len(); k++ {
-				spanData := spans.At(k)
-				transformedAdxTrace := mapToAdxTrace(resource.Resource(), scope.Scope(), spanData, e.logger)
-				adxTraceJsonBytes, err := jsoniter.Marshal(transformedAdxTrace)
-				adxTraceJsonBytes = append(adxTraceJsonBytes, nextline...)
+				spandata := spans.At(k)
+				transformedadxtrace := mapToAdxTrace(resource.Resource(), scope.Scope(), spandata, e.logger)
+				adxtracejsonbytes, err := jsoniter.Marshal(transformedadxtrace)
 				if err != nil {
 					e.logger.Error("Error performing serialization of data.", zap.Error(err))
 				}
-				spanDataArray = append(spanDataArray, adxTraceJsonBytes...)
+				adxtracejsonbytes = append(adxtracejsonbytes, nextline...)
+				spandataarray = append(spandataarray, adxtracejsonbytes...)
+				spandataarray = bytes.Join([][]byte{spandataarray, adxtracejsonbytes}, nextline)
 
 			}
-			if len(spanDataArray) != 0 {
-				if err := e.ingestData(spanDataArray); err != nil {
-					return err
-				}
-				spanDataArray = spanDataArray[:0]
-			}
+		}
+	}
+	if len(spandataarray) != 0 {
+		if err := e.ingestData(spandataarray); err != nil {
+			return err
 		}
 	}
 	return nil
