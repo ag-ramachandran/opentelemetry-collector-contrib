@@ -34,10 +34,8 @@ import (
 
 // adxDataProducer uses the ADX client to perform ingestion
 type adxDataProducer struct {
-	client *kusto.Client // client for logs , traces and metrics
-	// managedingest *ingest.Managed   // managed ingestion for  logs, traces and metrics
-	// queuedingest  *ingest.Ingestion // queued ingestion for  logs, traces and metrics
-	ingestor      localIngestor
+	client        *kusto.Client       // client for logs , traces and metrics
+	ingestor      localIngestor       // ingestion for  logs, traces and metrics
 	ingestoptions []ingest.FileOption // Options for the ingestion
 	logger        *zap.Logger         // Loggers for tracing the flow
 }
