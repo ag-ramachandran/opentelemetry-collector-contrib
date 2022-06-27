@@ -190,7 +190,6 @@ func newExporter(config *Config, logger *zap.Logger, telemetrydatatype int) (*ad
 		if err != nil {
 			return nil, err
 		}
-
 		managedingest = mi
 		queuedingest = nil
 		err = nil
@@ -214,7 +213,6 @@ func newExporter(config *Config, logger *zap.Logger, telemetrydatatype int) (*ad
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}, nil
-
 }
 
 /**

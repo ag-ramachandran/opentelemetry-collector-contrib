@@ -37,7 +37,7 @@ func TestLoadConfig(t *testing.T) {
 	require.NotNil(t, cfg)
 
 	// There are 3 stanzas in the exporter.
-	assert.Equal(t, len(cfg.Exporters), 3)
+	assert.Equal(t, len(cfg.Exporters), 2)
 
 	exporter := cfg.Exporters[config.NewComponentID(typeStr)]
 
