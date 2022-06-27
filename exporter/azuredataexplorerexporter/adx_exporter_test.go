@@ -32,7 +32,7 @@ import (
 	"go.uber.org/zap/zaptest"
 )
 
-func TestNewExporter_err_version(t *testing.T) {
+func TestNewExporter(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	c := Config{ClusterName: "https://CLUSTER.kusto.windows.net",
 		ClientId:       "unknown",
@@ -42,12 +42,12 @@ func TestNewExporter_err_version(t *testing.T) {
 		RawMetricTable: "not-configured",
 		RawLogTable:    "RawLogs",
 	}
-	texp, err := newExporter(&c, logger, MetricsType)
+	texp, err := newExporter(&c, logger, metricstype)
 	assert.Error(t, err)
 	assert.Nil(t, texp)
 }
 
-func TestMetricsDataPusher(t *testing.T) {
+func TestMetricsDataPusherStreaming(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
 	ingestoptions := make([]ingest.FileOption, 2)
@@ -55,14 +55,33 @@ func TestMetricsDataPusher(t *testing.T) {
 	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.JSON)
 	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawMetrics")
 
-	adxMetricsProducer := &adxDataProducer{
+	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
 		managedingest: managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
-	assert.NotNil(t, adxMetricsProducer)
-	err := adxMetricsProducer.metricsDataPusher(context.Background(), createMetricsData(10))
+	assert.NotNil(t, adxdataproducer)
+	err := adxdataproducer.metricsDataPusher(context.Background(), createMetricsData(10))
+	assert.NotNil(t, err)
+}
+
+func TestMetricsDataPusherQueued(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	kustoclient := kusto.NewMockClient()
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.JSON)
+	queuedingest, _ := ingest.New(kustoclient, "testDB", "RawMetrics")
+
+	adxdataproducer := &adxDataProducer{
+		client:        kustoclient,
+		queuedingest:  queuedingest,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}
+	assert.NotNil(t, adxdataproducer)
+	err := adxdataproducer.metricsDataPusher(context.Background(), createMetricsData(10))
 	assert.NotNil(t, err)
 	//stmt := kusto.Stmt{"RawMetrics | take 10"}
 	//kustoclient.Query(context.Background(), "testDB", stmt)
@@ -76,14 +95,14 @@ func TestLogsDataPusher(t *testing.T) {
 	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawLogs")), ingest.JSON)
 	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawLogs")
 
-	adxMetricsProducer := &adxDataProducer{
+	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
 		managedingest: managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
-	assert.NotNil(t, adxMetricsProducer)
-	err := adxMetricsProducer.logsDataPusher(context.Background(), createLogsData())
+	assert.NotNil(t, adxdataproducer)
+	err := adxdataproducer.logsDataPusher(context.Background(), createLogsData())
 	assert.NotNil(t, err)
 }
 
@@ -95,14 +114,14 @@ func TestTracesDataPusher(t *testing.T) {
 	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawLogs")), ingest.JSON)
 	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawLogs")
 
-	adxMetricsProducer := &adxDataProducer{
+	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
 		managedingest: managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
-	assert.NotNil(t, adxMetricsProducer)
-	err := adxMetricsProducer.tracesDataPusher(context.Background(), createTracesData())
+	assert.NotNil(t, adxdataproducer)
+	err := adxdataproducer.tracesDataPusher(context.Background(), createTracesData())
 	assert.NotNil(t, err)
 }
 
@@ -114,13 +133,13 @@ func TestClose(t *testing.T) {
 	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.MultiJSON)
 	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawMetrics")
 
-	adxMetricsProducer := &adxDataProducer{
+	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
 		managedingest: managedstreamingingest,
 		ingestoptions: ingestoptions,
 		logger:        logger,
 	}
-	err := adxMetricsProducer.Close(context.Background())
+	err := adxdataproducer.Close(context.Background())
 	assert.Nil(t, err)
 }
 

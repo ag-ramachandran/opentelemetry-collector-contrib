@@ -53,7 +53,7 @@ func TestCreateMetricsExporterWhenIngestEmpty(t *testing.T) {
 	require.NoError(t, err)
 	params := componenttest.NewNopExporterCreateSettings()
 	// Load the #3 which has empty
-	adxCfg := cfg.Exporters[config.NewComponentIDWithName(typeStr, "3")].(*Config)
+	adxCfg := cfg.Exporters[config.NewComponentIDWithName(typeStr, "2")].(*Config)
 	exporter, err := factory.CreateMetricsExporter(context.Background(), params, adxCfg)
 	assert.NotNil(t, err)
 	assert.Nil(t, exporter)
@@ -95,7 +95,7 @@ func TestCreateLogsExporterWhenIngestEmpty(t *testing.T) {
 	require.NoError(t, err)
 	params := componenttest.NewNopExporterCreateSettings()
 	// Load the #3 which has empty
-	adxCfg := cfg.Exporters[config.NewComponentIDWithName(typeStr, "3")].(*Config)
+	adxCfg := cfg.Exporters[config.NewComponentIDWithName(typeStr, "2")].(*Config)
 	exporter, err := factory.CreateLogsExporter(context.Background(), params, adxCfg)
 	assert.NotNil(t, err)
 	assert.Nil(t, exporter)
@@ -129,7 +129,7 @@ func TestCreateTracesExporterWhenIngestEmpty(t *testing.T) {
 	require.NoError(t, err)
 	params := componenttest.NewNopExporterCreateSettings()
 	// Load the #3 which has empty
-	adxCfg := cfg.Exporters[config.NewComponentIDWithName(typeStr, "3")].(*Config)
+	adxCfg := cfg.Exporters[config.NewComponentIDWithName(typeStr, "2")].(*Config)
 	exporter, err := factory.CreateTracesExporter(context.Background(), params, adxCfg)
 	assert.NotNil(t, err)
 	assert.Nil(t, exporter)

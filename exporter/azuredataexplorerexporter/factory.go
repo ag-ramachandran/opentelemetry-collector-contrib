@@ -32,9 +32,9 @@ const (
 	defaultmetrictable = "Rawmetrics"
 	defaultlogtable    = "RawLogs"
 	defaulttracetable  = "RawTraces"
-	MetricsType        = 1
-	LogsType           = 2
-	TracesType         = 3
+	metricstype        = 1
+	logstype           = 2
+	tracestype         = 3
 )
 
 // Creates a factory for the ADX Exporter
@@ -64,7 +64,7 @@ func createDefaultConfig() config.Exporter {
 }
 
 func createMetricsExporter(
-	ctx context.Context,
+	_ context.Context,
 	set component.ExporterCreateSettings,
 	config config.Exporter,
 ) (component.MetricsExporter, error) {
@@ -80,7 +80,7 @@ func createMetricsExporter(
 	}
 	// call the common exporter function in baseexporter. This ensures that the client and the ingest
 	// are initialized and the metrics struct are available for operations
-	amp, err := newExporter(adxCfg, set.Logger, MetricsType)
+	amp, err := newExporter(adxCfg, set.Logger, metricstype)
 
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func createTracesExporter(
 	}
 	// call the common exporter function in baseexporter. This ensures that the client and the ingest
 	// are initialized and the metrics struct are available for operations
-	amp, err := newExporter(adxCfg, set.Logger, TracesType)
+	amp, err := newExporter(adxCfg, set.Logger, tracestype)
 
 	if err != nil {
 		return nil, err
@@ -146,7 +146,7 @@ func createLogsExporter(
 	}
 	// call the common exporter function in baseexporter. This ensures that the client and the ingest
 	// are initialized and the metrics struct are available for operations
-	amp, err := newExporter(adxCfg, set.Logger, LogsType)
+	amp, err := newExporter(adxCfg, set.Logger, logstype)
 
 	if err != nil {
 		return nil, err
