@@ -49,7 +49,7 @@ var nextline = []byte("\n")
 
 // given the full metrics , extract each metric , resource attributes and scope attributes. Individual metric mapping is sent on to metricdata mapping
 func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric.Metrics) error {
-	metricsbytearray := make([]byte, 0)
+	metricsBuffer := bytes.Buffer{}
 	transformedadxmetrics, err := rawMetricsToAdxMetrics(ctx, metrics, e.logger)
 	if err != nil {
 		e.logger.Error("Error transforming metrics to ADX metric format.", zap.Error(err))
@@ -61,12 +61,13 @@ func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric
 		if err != nil {
 			e.logger.Error("Error performing serialization of data.", zap.Error(err))
 		}
-		metricsbytearray = bytes.Join([][]byte{metricsbytearray, adxmetricjsonbytes}, nextline)
+		metricsBuffer.Write(append(adxmetricjsonbytes, nextline...))
 	}
-	if len(metricsbytearray) != 0 {
-		if err := e.ingestData(metricsbytearray); err != nil {
+	if metricsBuffer.Len() != 0 {
+		if err := e.ingestData(metricsBuffer.Bytes()); err != nil {
 			return err
 		}
+		metricsBuffer.Reset()
 	}
 	metricsflushed := len(transformedadxmetrics)
 	e.logger.Sugar().Infof("Flushing %d metrics to sink", metricsflushed)
@@ -81,13 +82,12 @@ func (e *adxDataProducer) ingestData(b []byte) error {
 		e.logger.Error("Error performing managed data ingestion.", zap.Error(err))
 		return err
 	}
-
 	return nil
 }
 
 func (e *adxDataProducer) logsDataPusher(ctx context.Context, logData plog.Logs) error {
 	resourcelogs := logData.ResourceLogs()
-	logsarray := make([]byte, 0)
+	logsBuffer := bytes.Buffer{}
 	for i := 0; i < resourcelogs.Len(); i++ {
 		resource := resourcelogs.At(i)
 		scopelogs := resourcelogs.At(i).ScopeLogs()
@@ -101,22 +101,23 @@ func (e *adxDataProducer) logsDataPusher(ctx context.Context, logData plog.Logs)
 				if err != nil {
 					e.logger.Error("Error performing serialization of data.", zap.Error(err))
 				}
-				logsarray = bytes.Join([][]byte{logsarray, adxlogjsonbytes}, nextline)
+				logsBuffer.Write(append(adxlogjsonbytes, nextline...))
 
 			}
 		}
 	}
-	if len(logsarray) != 0 {
-		if err := e.ingestData(logsarray); err != nil {
+	if logsBuffer.Len() != 0 {
+		if err := e.ingestData(logsBuffer.Bytes()); err != nil {
 			return err
 		}
+		logsBuffer.Reset()
 	}
 	return nil
 }
 
 func (e *adxDataProducer) tracesDataPusher(ctx context.Context, traceData ptrace.Traces) error {
 	resourcespans := traceData.ResourceSpans()
-	spandataarray := make([]byte, 0)
+	spanBuffer := bytes.Buffer{}
 	for i := 0; i < resourcespans.Len(); i++ {
 		resource := resourcespans.At(i)
 		scopespans := resourcespans.At(i).ScopeSpans()
@@ -130,17 +131,15 @@ func (e *adxDataProducer) tracesDataPusher(ctx context.Context, traceData ptrace
 				if err != nil {
 					e.logger.Error("Error performing serialization of data.", zap.Error(err))
 				}
-				adxtracejsonbytes = append(adxtracejsonbytes, nextline...)
-				spandataarray = append(spandataarray, adxtracejsonbytes...)
-				spandataarray = bytes.Join([][]byte{spandataarray, adxtracejsonbytes}, nextline)
-
+				spanBuffer.Write(append(adxtracejsonbytes, nextline...))
 			}
 		}
 	}
-	if len(spandataarray) != 0 {
-		if err := e.ingestData(spandataarray); err != nil {
+	if spanBuffer.Len() != 0 {
+		if err := e.ingestData(spanBuffer.Bytes()); err != nil {
 			return err
 		}
+		spanBuffer.Reset()
 	}
 	return nil
 }
