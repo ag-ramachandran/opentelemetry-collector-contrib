@@ -16,8 +16,6 @@ package azuredataexplorerexporter
 
 import (
 	"context"
-	"fmt"
-	"strings"
 	"testing"
 	"time"
 
@@ -39,12 +37,12 @@ func TestNewExporter(t *testing.T) {
 		ClientSecret:           "unknown",
 		TenantId:               "unknown",
 		Database:               "not-configured",
-		OTELMetricTable:        "not-configured",
-		OTELLogTable:           "RawLogs",
-		OTELTraceTable:         "RawTrace",
-		OTELMetricTableMapping: "not-configured_mapping",
-		OTELLogTableMapping:    "not-configured_mapping",
-		OTELTraceTableMapping:  "not-configured_mapping",
+		OTELMetricTable:        "OTELMetrics",
+		OTELLogTable:           "OTELLogs",
+		OTELTraceTable:         "OTELTraces",
+		OTELMetricTableMapping: "otelmetrics_mapping",
+		OTELLogTableMapping:    "otellogs_mapping",
+		OTELTraceTableMapping:  "oteltraces_mapping",
 	}
 	texp, err := newExporter(&c, logger, metricstype)
 	assert.Error(t, err)
@@ -63,10 +61,9 @@ func TestNewExporter(t *testing.T) {
 func TestMetricsDataPusherStreaming(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
-	ingestoptions := make([]ingest.FileOption, 2)
-	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.JSON)
-	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawMetrics")
+	var ingestoptions []ingest.FileOption
+	ingestoptions = append(ingestoptions, ingest.FileFormat(ingest.JSON))
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "OTELMetrics")
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
@@ -82,10 +79,9 @@ func TestMetricsDataPusherStreaming(t *testing.T) {
 func TestMetricsDataPusherQueued(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
-	ingestoptions := make([]ingest.FileOption, 2)
-	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.JSON)
-	queuedingest, _ := ingest.New(kustoclient, "testDB", "RawMetrics")
+	var ingestoptions []ingest.FileOption
+	ingestoptions = append(ingestoptions, ingest.FileFormat(ingest.JSON))
+	queuedingest, _ := ingest.New(kustoclient, "testDB", "OTELMetrics")
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
@@ -96,17 +92,14 @@ func TestMetricsDataPusherQueued(t *testing.T) {
 	assert.NotNil(t, adxdataproducer)
 	err := adxdataproducer.metricsDataPusher(context.Background(), createMetricsData(10))
 	assert.NotNil(t, err)
-	//stmt := kusto.Stmt{"RawMetrics | take 10"}
-	//kustoclient.Query(context.Background(), "testDB", stmt)
 }
 
 func TestLogsDataPusher(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
-	ingestoptions := make([]ingest.FileOption, 2)
-	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawLogs")), ingest.JSON)
-	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawLogs")
+	var ingestoptions []ingest.FileOption
+	ingestoptions = append(ingestoptions, ingest.FileFormat(ingest.JSON))
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "OTELLogs")
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
@@ -122,10 +115,9 @@ func TestLogsDataPusher(t *testing.T) {
 func TestTracesDataPusher(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
-	ingestoptions := make([]ingest.FileOption, 2)
-	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawLogs")), ingest.JSON)
-	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawLogs")
+	var ingestoptions []ingest.FileOption
+	ingestoptions = append(ingestoptions, ingest.FileFormat(ingest.JSON))
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "OTELLogs")
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,
@@ -141,10 +133,9 @@ func TestTracesDataPusher(t *testing.T) {
 func TestClose(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	kustoclient := kusto.NewMockClient()
-	ingestoptions := make([]ingest.FileOption, 2)
-	ingestoptions[0] = ingest.FileFormat(ingest.MultiJSON)
-	ingestoptions[1] = ingest.IngestionMappingRef(fmt.Sprintf("%s_mapping", strings.ToLower("RawMetrics")), ingest.MultiJSON)
-	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "RawMetrics")
+	var ingestoptions []ingest.FileOption
+	ingestoptions = append(ingestoptions, ingest.FileFormat(ingest.JSON))
+	managedstreamingingest, _ := ingest.NewManaged(kustoclient, "testDB", "OTELMetrics")
 
 	adxdataproducer := &adxDataProducer{
 		client:        kustoclient,

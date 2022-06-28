@@ -145,20 +145,21 @@ func (e *adxDataProducer) tracesDataPusher(ctx context.Context, traceData ptrace
 	return nil
 }
 
-func (amp *adxDataProducer) Close(context.Context) error {
+func (adp *adxDataProducer) Close(context.Context) error {
 
 	var err error
 
-	err = amp.ingestor.Close()
-	amp.logger.Info("Closed Ingestor")
-	err2 := amp.client.Close()
+	err = adp.ingestor.Close()
+	err2 := adp.client.Close()
 	if err == nil {
 		err = err2
 	} else {
 		err = errors.GetCombinedError(err, err2)
 	}
 	if err != nil {
-		amp.logger.Warn("Error closing connections", zap.Error(err))
+		adp.logger.Warn("Error closing connections", zap.Error(err))
+	} else {
+		adp.logger.Info("Closed Ingestor and Client")
 	}
 	return err
 }
@@ -176,8 +177,8 @@ func newExporter(config *Config, logger *zap.Logger, telemetrydatatype int) (*ad
 
 	var ingestor localIngestor
 
-	ingestoptions := make([]ingest.FileOption, 1)
-	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	var ingestoptions []ingest.FileOption
+	ingestoptions = append(ingestoptions, ingest.FileFormat(ingest.JSON))
 	// Expect that this mapping is already existent
 	if refoption := getMappingRef(config, telemetrydatatype); refoption != nil {
 		ingestoptions = append(ingestoptions, refoption)
@@ -214,26 +215,16 @@ Common functions that are used by all the 3 parts of OTEL , namely Traces , Logs
 func getMappingRef(config *Config, telemetrydatatype int) ingest.FileOption {
 	switch telemetrydatatype {
 	case metricstype:
-		{
-			if !isEmpty(config.OTELMetricTableMapping) {
-				return ingest.IngestionMappingRef(config.OTELMetricTableMapping, ingest.JSON)
-			}
-			break
+		if !isEmpty(config.OTELMetricTableMapping) {
+			return ingest.IngestionMappingRef(config.OTELMetricTableMapping, ingest.JSON)
 		}
 	case tracestype:
-		{
-			if !isEmpty(config.OTELTraceTableMapping) {
-				return ingest.IngestionMappingRef(config.OTELTraceTableMapping, ingest.JSON)
-			}
-			break
+		if !isEmpty(config.OTELTraceTableMapping) {
+			return ingest.IngestionMappingRef(config.OTELTraceTableMapping, ingest.JSON)
 		}
-
 	case logstype:
-		{
-			if !isEmpty(config.OTELLogTableMapping) {
-				return ingest.IngestionMappingRef(config.OTELLogTableMapping, ingest.JSON)
-			}
-			break
+		if !isEmpty(config.OTELLogTableMapping) {
+			return ingest.IngestionMappingRef(config.OTELLogTableMapping, ingest.JSON)
 		}
 	}
 	return nil
