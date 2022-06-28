@@ -15,7 +15,6 @@
 package azuredataexplorerexporter // import "github.com/open-telemetry/opentelemetry-collector-contrib/exporter/azuredataexplorerexporter"
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"strings"
@@ -45,11 +44,11 @@ type localIngestor interface {
 	Close() error
 }
 
-var nextline = []byte("\n")
+const nextline = "\n"
 
 // given the full metrics , extract each metric , resource attributes and scope attributes. Individual metric mapping is sent on to metricdata mapping
 func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric.Metrics) error {
-	metricsBuffer := bytes.NewBuffer(make([]byte, 0, maxContentLengthMetricsLimit))
+	var metricsBuffer []string
 	transformedadxmetrics, err := rawMetricsToAdxMetrics(ctx, metrics, e.logger)
 	if err != nil {
 		e.logger.Error("Error transforming metrics to ADX metric format.", zap.Error(err))
@@ -57,33 +56,27 @@ func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric
 	}
 	// Since the transform succeeded ,  using the option for ingestion ingest the data into ADX
 	for _, tm := range transformedadxmetrics {
-		adxmetricjsonbytes, err := jsoniter.Marshal(tm)
+		adxmetricjsonstring, err := jsoniter.MarshalToString(tm)
 		if err != nil {
 			e.logger.Error("Error performing serialization of data.", zap.Error(err))
 		}
-		/*If the span data exceeds the current capacity. Ingest the existing data and reset the buffer*/
-		if metricsBuffer.Len()+len(adxmetricjsonbytes) > maxContentLengthMetricsLimit {
-			if err := e.ingestData(metricsBuffer.Bytes()); err != nil {
-				return err
-			}
-			metricsBuffer.Reset()
-		}
-		metricsBuffer.Write(append(adxmetricjsonbytes, nextline...))
+
+		metricsBuffer = append(metricsBuffer, adxmetricjsonstring)
+
 	}
-	if metricsBuffer.Len() != 0 {
-		if err := e.ingestData(metricsBuffer.Bytes()); err != nil {
+	if len(metricsBuffer) != 0 {
+		if err := e.ingestData(metricsBuffer); err != nil {
 			return err
 		}
-		metricsBuffer.Reset()
 	}
 	metricsflushed := len(transformedadxmetrics)
 	e.logger.Sugar().Infof("Flushing %d metrics to sink", metricsflushed)
 	return nil
 }
 
-func (e *adxDataProducer) ingestData(b []byte) error {
+func (e *adxDataProducer) ingestData(b []string) error {
 
-	ingestreader := bytes.NewReader(b)
+	ingestreader := strings.NewReader(strings.Join(b, nextline))
 
 	if _, err := e.ingestor.FromReader(context.Background(), ingestreader, e.ingestoptions...); err != nil {
 		e.logger.Error("Error performing managed data ingestion.", zap.Error(err))
@@ -94,7 +87,7 @@ func (e *adxDataProducer) ingestData(b []byte) error {
 
 func (e *adxDataProducer) logsDataPusher(ctx context.Context, logData plog.Logs) error {
 	resourcelogs := logData.ResourceLogs()
-	logsBuffer := bytes.NewBuffer(make([]byte, 0, maxContentLengthLogsLimit))
+	var logsBuffer []string
 	for i := 0; i < resourcelogs.Len(); i++ {
 		resource := resourcelogs.At(i)
 		scopelogs := resourcelogs.At(i).ScopeLogs()
@@ -108,31 +101,22 @@ func (e *adxDataProducer) logsDataPusher(ctx context.Context, logData plog.Logs)
 				if err != nil {
 					e.logger.Error("Error performing serialization of data.", zap.Error(err))
 				}
-				/*If the span data exceeds the current capacity. Ingest the existing data and reset the buffer*/
-				if logsBuffer.Len()+len(adxlogjsonbytes) > maxContentLengthLogsLimit {
-					if err := e.ingestData(logsBuffer.Bytes()); err != nil {
-						return err
-					}
-					logsBuffer.Reset()
-				}
-				logsBuffer.Write(append(adxlogjsonbytes, nextline...))
-
+				logsBuffer = append(logsBuffer, string(adxlogjsonbytes))
 			}
 		}
 	}
 	// Takes care of the residual data.
-	if logsBuffer.Len() != 0 {
-		if err := e.ingestData(logsBuffer.Bytes()); err != nil {
+	if len(logsBuffer) != 0 {
+		if err := e.ingestData(logsBuffer); err != nil {
 			return err
 		}
-		logsBuffer.Reset()
 	}
 	return nil
 }
 
 func (e *adxDataProducer) tracesDataPusher(ctx context.Context, traceData ptrace.Traces) error {
 	resourcespans := traceData.ResourceSpans()
-	spanBuffer := bytes.NewBuffer(make([]byte, 0, maxContentLengthTracesLimit))
+	var spanBuffer []string
 	for i := 0; i < resourcespans.Len(); i++ {
 		resource := resourcespans.At(i)
 		scopespans := resourcespans.At(i).ScopeSpans()
@@ -146,23 +130,15 @@ func (e *adxDataProducer) tracesDataPusher(ctx context.Context, traceData ptrace
 				if err != nil {
 					e.logger.Error("Error performing serialization of data.", zap.Error(err))
 				}
-				/*If the span data exceeds the current capacity. Ingest the existing data and reset the buffer*/
-				if spanBuffer.Len()+len(adxtracejsonbytes) > maxContentLengthTracesLimit {
-					if err := e.ingestData(spanBuffer.Bytes()); err != nil {
-						return err
-					}
-					spanBuffer.Reset()
-				}
-				spanBuffer.Write(append(adxtracejsonbytes, nextline...))
+				spanBuffer = append(spanBuffer, string(adxtracejsonbytes))
 			}
 		}
 	}
 	// Takes care of the residual data.
-	if spanBuffer.Len() != 0 {
-		if err := e.ingestData(spanBuffer.Bytes()); err != nil {
+	if len(spanBuffer) != 0 {
+		if err := e.ingestData(spanBuffer); err != nil {
 			return err
 		}
-		spanBuffer.Reset()
 	}
 	return nil
 }
