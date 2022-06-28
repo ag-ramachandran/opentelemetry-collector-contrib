@@ -16,6 +16,10 @@ package azuredataexplorerexporter
 
 import (
 	"context"
+	"io"
+	"io/ioutil"
+	"math/rand"
+	"strings"
 	"testing"
 	"time"
 
@@ -145,6 +149,51 @@ func TestClose(t *testing.T) {
 	}
 	err := adxdataproducer.Close(context.Background())
 	assert.Nil(t, err)
+}
+
+func TestIngestedDataRecordCount(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	kustoclient := kusto.NewMockClient()
+	ingestoptions := make([]ingest.FileOption, 2)
+	ingestoptions[0] = ingest.FileFormat(ingest.JSON)
+	ingestor := &mockingestor{}
+
+	adxdataproducer := &adxDataProducer{
+		client:        kustoclient,
+		ingestor:      ingestor,
+		ingestoptions: ingestoptions,
+		logger:        logger,
+	}
+	rand.Seed(time.Now().UTC().UnixNano())
+	recordstoingest := rand.Intn(20)
+	err := adxdataproducer.metricsDataPusher(context.Background(), createMetricsData(recordstoingest))
+	ingestedrecordsactual := ingestor.Records()
+	assert.Equal(t, recordstoingest, len(ingestedrecordsactual), "Number of metrics created should match number of records ingested")
+	assert.Nil(t, err)
+}
+
+type mockingestor struct {
+	records []string
+}
+
+func (m *mockingestor) FromReader(ctx context.Context, reader io.Reader, options ...ingest.FileOption) (*ingest.Result, error) {
+	bufbytes, _ := ioutil.ReadAll(reader)
+	metricjson := string(bufbytes)
+	m.SetRecords(strings.Split(metricjson, "\n"))
+	return &ingest.Result{}, nil
+}
+
+func (f *mockingestor) SetRecords(records []string) {
+	f.records = records
+}
+
+// Name receives a copy of Foo since it doesn't need to modify it.
+func (f *mockingestor) Records() []string {
+	return f.records
+}
+
+func (m *mockingestor) Close() error {
+	return nil
 }
 
 func createMetricsData(numberOfDataPoints int) pmetric.Metrics {
