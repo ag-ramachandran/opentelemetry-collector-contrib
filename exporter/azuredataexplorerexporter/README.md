@@ -18,6 +18,9 @@ The following settings can be optionally configured and have default values:
 - `metrics_table_name` (default = OTELMetrics): The target table in the database `db_name` that stores exported metric data.
 - `logs_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported logs data.
 - `traces_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported traces data.
+- `metrics_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`metrics_table_name` 
+- `logs_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`logs_table_name`
+- `traces_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`traces_table_name`
 - `ingestion_type` (default = queued): ADX ingest can happen in managed [streaming](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/streamingingestionpolicy) or [queued](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/batchingpolicy) modes.
 
 An example configuration is provided as follows:
@@ -33,23 +36,47 @@ exporters:
     client_secret: "17cc3f47-e95e-4045-af6c-ec2eea163cc6"
     # The tenant
     tenant_id: "21ff9e36-fbaa-43c8-98ba-00431ea10bc3"
-    # database for the logs
+    # Database for the logs
     db_name: "oteldb"
-    # raw metric table name
-    metrics_table_name: "RawMetrics"
-    # raw log table name
-    logs_table_name: "RawLogs"
-     # raw traces table
-    traces_table_name: "RawTraces"
-    # type of ingestion managed or queued
+    # Metric table name
+    metrics_table_name: "OTELMetrics"
+    # Log table name
+    logs_table_name: "OTELLogs"
+    # Traces table
+    traces_table_name: "OTELTraces"
+    # Metric table mapping name
+    metrics_table_name_mapping: "otelmetrics_mapping"
+    # Log table mapping name
+    logs_table_name_mapping: "otellogs_mapping"
+    # Traces mapping table
+    traces_table_name_mapping: "oteltraces_mapping"
+    # Type of ingestion managed or queued
     ingestion_type : "managed"
 ```
 
 ## Attribute mapping
 
-### Metrics
+This exporter maps OpenTelemetry  [trace](https://opentelemetry.io/docs/reference/specification/trace/sdk/), [metric](https://opentelemetry.io/docs/reference/specification/metrics/sdk/) and [log](https://opentelemetry.io/docs/reference/specification/logs/data-model/) attributes to specific structures in the ADX tables. These can then be extended by usage of [update policies](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/updatepolicy) in ADX if needed
 
-This exporter maps [OpenTelemetry metric attributes](https://opentelemetry.io/docs/reference/specification/metrics/sdk/) to specific structures in the ADX tables. These can then be extended by usage of [update policies](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/updatepolicy) in ADX if needed
+### Traces
+
+| ADX Table column              | Description / OpenTelemetry attribute                               
+| ----------------------------- |------------------------------------------------------ 
+| TraceId                     | A valid trace identifier is a 16-byte array with at least one non-zero byte.            
+| SpanId                    | A valid span identifier is an 8-byte array with at least one non-zero byte.          
+| ParentId                    | A parent spanId, for the current span
+| SpanName                    | The span name
+| SpanStatus             | [Status](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#set-status) of the Span. 
+| SpanKind                   | [SpanKind](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#spankind) describes the relationship between the Span, its parents, and its children in a Trace
+| StartTime                   | A start timestamp
+| EndTime                   | An end timestamp
+| TraceAttributes              | Custom metric [attributes](https://opentelemetry.io/docs/reference/specification/common/#attribute) set from the application. Also contains the [instrumentation scope](https://opentelemetry.io/docs/reference/specification/common/#attribute) name and version  
+| ResourceAttributes            | The resource attributes JSON map as specified in open telemetry [resource semantics](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/)
+| Events                   | A list of timestamped [ Events](https://opentelemetry.io/docs/reference/specification/trace/api/#add-events)
+| Links                   | A list of [Links](https://opentelemetry.io/docs/reference/specification/trace/api/#specifying-links) to other Spans
+
+
+### Metrics
 
 | ADX Table column              | Description / OpenTelemetry attribute                               
 | ----------------------------- |------------------------------------------------------ 
@@ -61,6 +88,20 @@ This exporter maps [OpenTelemetry metric attributes](https://opentelemetry.io/do
 | MetricValue                   | The metric value measured for the datapoint
 | MetricAttributes              | Custom metric [attributes](https://opentelemetry.io/docs/reference/specification/common/#attribute) set from the application. Also contains the [instrumentation scope](https://opentelemetry.io/docs/reference/specification/common/#attribute) name and version  
 | Host                          | The host.name extracted from [Host resource semantics](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/host/). If empty , the hostname of the exporter is used
+| ResourceAttributes            | The resource attributes JSON map as specified in open telemetry [resource semantics](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/)
+
+### Logs
+
+| ADX Table column              | Description / OpenTelemetry attribute                               
+| ----------------------------- |------------------------------------------------------ 
+| Timestamp                     | The timestamp of the datapoint            
+| ObservedTimestamp                    | Time when the event was observed.          
+| TraceId                    | Request trace id.
+| SpanId                    | Request span id.
+| SeverityText             | The severity text (also known as log level)
+| SeverityNumber                   | [Numerical value](https://opentelemetry.io/docs/reference/specification/logs/data-model/#field-severitynumber) of the severity.
+| Body                          | The body of the log record.
+| LogsAttributes              | Custom metric [attributes](https://opentelemetry.io/docs/reference/specification/common/#attribute) set from the application. Also contains the [instrumentation scope](https://opentelemetry.io/docs/reference/specification/common/#attribute) name and version  
 | ResourceAttributes            | The resource attributes JSON map as specified in open telemetry [resource semantics](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/)
 
 
