@@ -25,19 +25,16 @@ import (
 
 const (
 	// The value of "type" key in configuration.
-	typeStr                      = "azuredataexplorer"
-	managedingesttype            = "managed"
-	queuedingesttest             = "queued"
-	unknown                      = "unknown"
-	defaultmetrictable           = "OTELMetrics"
-	defaultlogtable              = "OTELLogs"
-	defaulttracetable            = "OTELTraces"
-	metricstype                  = 1
-	logstype                     = 2
-	tracestype                   = 3
-	maxContentLengthLogsLimit    = 2 * 1024 * 1024
-	maxContentLengthMetricsLimit = 2 * 1024 * 1024
-	maxContentLengthTracesLimit  = 2 * 1024 * 1024
+	typeStr            = "azuredataexplorer"
+	managedingesttype  = "managed"
+	queuedingesttest   = "queued"
+	unknown            = "unknown"
+	defaultmetrictable = "OTELMetrics"
+	defaultlogtable    = "OTELLogs"
+	defaulttracetable  = "OTELTraces"
+	metricstype        = 1
+	logstype           = 2
+	tracestype         = 3
 )
 
 // Creates a factory for the ADX Exporter
