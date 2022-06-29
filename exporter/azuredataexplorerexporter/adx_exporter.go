@@ -60,7 +60,6 @@ func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric
 		if err != nil {
 			e.logger.Error("Error performing serialization of data.", zap.Error(err))
 		}
-
 		metricsBuffer = append(metricsBuffer, adxmetricjsonstring)
 
 	}
