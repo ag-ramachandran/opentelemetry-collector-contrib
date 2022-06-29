@@ -1,4 +1,4 @@
-# Azure Monitor Exporter
+# Azure Data Explorer Exporter
 
 This exporter sends metrics , logs and trace data to [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/).
 
