@@ -18,10 +18,11 @@ The following settings can be optionally configured and have default values:
 - `metrics_table_name` (default = OTELMetrics): The target table in the database `db_name` that stores exported metric data.
 - `logs_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported logs data.
 - `traces_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported traces data.
-- `metrics_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`metrics_table_name` 
-- `logs_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`logs_table_name`
-- `traces_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`traces_table_name`
+- `metrics_table_name_mapping` (optional, no default): The [table mapping](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/mappings#json-mapping) name to be used for the table `db_name`.`metrics_table_name` 
+- `logs_table_name_mapping` (optional, no default): The [table mapping](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/mappings#json-mapping) name to be used for the table `db_name`.`logs_table_name`
+- `traces_table_name_mapping` (optional, no default): The [table mapping](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/mappings#json-mapping) name to be used for the table `db_name`.`traces_table_name`
 - `ingestion_type` (default = queued): ADX ingest can happen in managed [streaming](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/streamingingestionpolicy) or [queued](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/batchingpolicy) modes.
+(Note: Do not forget to [configure the ADX cluster](https://docs.microsoft.com/en-us/azure/data-explorer/ingest-data-streaming?tabs=azure-portal%2Ccsharp) in case of `streaming`)
 
 An example configuration is provided as follows:
 
@@ -115,4 +116,46 @@ The following tables need to be created in the database specified in the configu
 .create-merge table OTELMetrics (Timestamp:datetime, MetricName:string, MetricType:string, MetricUnit:string, MetricDescription:string, MetricValue:real, Host:string, ResourceAttributes:dynamic,MetricAttributes:dynamic) 
 
 .create-merge table OTELTraces (TraceId:string, SpanId:string, ParentId:string, SpanName:string, SpanStatus:string, SpanKind:string, StartTime:datetime, EndTime:datetime, ResourceAttributes:dynamic, TraceAttributes:dynamic, Events:dynamic, Links:dynamic) 
+```
+## Optional configurations/Enhancements suggestions
+
+- Metric Data can then be extended by using update policies, which can categorize metric data to corresponding tables
+```sql
+.create table HistoBucketData (Timestamp: datetime, MetricName: string , MetricType: string , Value: double, LE: double, Host: string , ResourceAttributes: dynamic, MetricAttributes: dynamic )
+
+.create function 
+with ( docstring = "Histo bucket processing function", folder = "UpdatePolicyFunctions") ExtractHistoColumns()
+{
+    OTELMetrics
+    | where MetricType == 'Histogram' and MetricName has "_bucket"
+    | extend f=parse_json(MetricAttributes)
+    | extend le=todouble(f.le)
+    | extend M_name=replace_string(MetricName, '_bucket','')
+    | project Timestamp, MetricName=M_name, MetricType, MetricValue, LE=le, Host, ResourceAttributes, MetricAttributes
+}
+
+.alter table HistoBucketData policy update 
+@'[{ "IsEnabled": true, "Source": "OTELMetrics","Query": "ExtractHistoColumns()", "IsTransactional": false, "PropagateIngestionProperties": false}]'
+
+ ## Below code create a table which only contains count and sum values of Histogram metric type and attaches an update policy to it
+
+ .create table HistoData (Timestamp: datetime, MetricName: string , MetricType: string , Count: double, Sum: double, Host: string , ResourceAttributes: dynamic, MetricAttributes: dynamic)
+
+ .create function 
+with ( docstring = "Histo sum count processing function", folder = "UpdatePolicyFunctions") ExtractHistoCountColumns()
+{
+   OTELMetrics
+    | where MetricType =='Histogram'
+    | where MetricName has "_count"
+    | extend Count=MetricValue
+    | extend M_name=replace_string(MetricName, '_bucket','')
+    | join kind=inner (OTELMetrics
+    | where MetricType =='Histogram'
+    | where MetricName has "_sum"
+    | project Sum = MetricValue , Timestamp)
+ on Timestamp | project Timestamp, MetricName=M_name, MetricType, Count, Sum, Host, ResourceAttributes, MetricAttributes
+}
+
+.alter table HistoData policy update 
+@'[{ "IsEnabled": true, "Source": "RawMetricsData","Query": "ExtractHistoCountColumns()", "IsTransactional": false, "PropagateIngestionProperties": false}]'
 ```
