@@ -13,16 +13,17 @@ The following settings are required:
 
 The following settings can be optionally configured and have default values:
 #### Note that the database , tables are expected to be created upfront before the exporter is in operation , the definition of these are in the section [Database and Table definition scripts](#database-and-table-definition-scripts)
-
 - `db_name` (default = "oteldb"): The ADX database where the tables are present to ingest the data.
 - `metrics_table_name` (default = OTELMetrics): The target table in the database `db_name` that stores exported metric data.
 - `logs_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported logs data.
 - `traces_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported traces data.
-- `metrics_table_name_mapping` (optional, no default): The [table mapping](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/mappings#json-mapping) name to be used for the table `db_name`.`metrics_table_name` 
-- `logs_table_name_mapping` (optional, no default): The [table mapping](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/mappings#json-mapping) name to be used for the table `db_name`.`logs_table_name`
-- `traces_table_name_mapping` (optional, no default): The [table mapping](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/mappings#json-mapping) name to be used for the table `db_name`.`traces_table_name`
+
+  Optionally the following table mappings can be specified if the data needs to be mapped to a different table on ADX. This uses json [table mapping](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/mappings#json-mapping) that can be used to map [attributes](#attribute-mapping) to target tables
+- `metrics_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`metrics_table_name` 
+- `logs_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`logs_table_name`
+- `traces_table_name_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`traces_table_name`
 - `ingestion_type` (default = queued): ADX ingest can happen in managed [streaming](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/streamingingestionpolicy) or [queued](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/management/batchingpolicy) modes.
-(Note: Do not forget to [configure the ADX cluster](https://docs.microsoft.com/en-us/azure/data-explorer/ingest-data-streaming?tabs=azure-portal%2Ccsharp) in case of `streaming`)
+#### Note: [Streaming ingestion](https://docs.microsoft.com/en-us/azure/data-explorer/ingest-data-streaming?tabs=azure-portal%2Ccsharp) has to be enabled on ADX [configure the ADX cluster] in case of `streaming` option
 
 An example configuration is provided as follows:
 
@@ -117,9 +118,10 @@ The following tables need to be created in the database specified in the configu
 
 .create-merge table OTELTraces (TraceId:string, SpanId:string, ParentId:string, SpanName:string, SpanStatus:string, SpanKind:string, StartTime:datetime, EndTime:datetime, ResourceAttributes:dynamic, TraceAttributes:dynamic, Events:dynamic, Links:dynamic) 
 ```
-## Optional configurations/Enhancements suggestions
+### Optional configurations/Enhancements suggestions
 
-- Metric Data can then be extended by using update policies, which can categorize metric data to corresponding tables
+- Using update policies , the collected data can further be processed as per application need. The following is an example where histogram metrics are exported to a histo specific table (buckets and aggregates)
+
 ```sql
 .create table HistoBucketData (Timestamp: datetime, MetricName: string , MetricType: string , Value: double, LE: double, Host: string , ResourceAttributes: dynamic, MetricAttributes: dynamic )
 
