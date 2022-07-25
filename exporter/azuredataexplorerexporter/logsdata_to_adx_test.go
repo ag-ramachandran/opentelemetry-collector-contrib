@@ -57,12 +57,8 @@ func Test_mapToAdxLog(t *testing.T) {
 				logRecord.SetSeverityText("DEBUG")
 				return logRecord
 			},
-			logResourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
-			logScopeFn: func() pcommon.InstrumentationScope {
-				return newScopeWithData()
-			},
+			logResourceFn: newDummyResource,
+			logScopeFn:    newScopeWithData,
 			expectedAdxLogs: []*AdxLog{
 				{
 					Timestamp:          tstr,
@@ -90,12 +86,8 @@ func Test_mapToAdxLog(t *testing.T) {
 				logRecord.SetTraceID(pcommon.NewTraceID(traceId))
 				return logRecord
 			},
-			logResourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
-			logScopeFn: func() pcommon.InstrumentationScope {
-				return newScopeWithData()
-			},
+			logResourceFn: newDummyResource,
+			logScopeFn:    newScopeWithData,
 			expectedAdxLogs: []*AdxLog{
 				{
 					Timestamp:          tstr,
@@ -122,12 +114,8 @@ func Test_mapToAdxLog(t *testing.T) {
 				logRecord.SetSeverityText("DEBUG")
 				return logRecord
 			},
-			logResourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
-			logScopeFn: func() pcommon.InstrumentationScope {
-				return newScopeWithData()
-			},
+			logResourceFn: newDummyResource,
+			logScopeFn:    newScopeWithData,
 			expectedAdxLogs: []*AdxLog{
 				{
 					Timestamp:          tstr,
@@ -160,12 +148,8 @@ func Test_mapToAdxLog(t *testing.T) {
 				logRecord.SetSeverityText("DEBUG")
 				return logRecord
 			},
-			logResourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
-			logScopeFn: func() pcommon.InstrumentationScope {
-				return newScopeWithData()
-			},
+			logResourceFn: newDummyResource,
+			logScopeFn:    newScopeWithData,
 			expectedAdxLogs: []*AdxLog{
 				{
 					Timestamp:          tstr,

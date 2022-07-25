@@ -29,7 +29,6 @@ const (
 	typeStr            = "azuredataexplorer"
 	managedIngestType  = "managed"
 	queuedIngestTest   = "queued"
-	unknown            = "unknown"
 	otelDb             = "oteldb"
 	defaultMetricTable = "OTELMetrics"
 	defaultLogTable    = "OTELLogs"

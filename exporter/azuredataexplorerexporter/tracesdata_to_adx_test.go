@@ -61,9 +61,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 			resourceFn: func() pcommon.Resource {
 				return newDummyResource()
 			},
-			insScopeFn: func() pcommon.InstrumentationScope {
-				return newScopeWithData()
-			},
+			insScopeFn: newScopeWithData,
 			expectedAdxTrace: &AdxTrace{
 				TraceId:            "00000000000000000000000000000064",
 				SpanId:             "0000000000000032",
@@ -86,9 +84,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 				return span
 			},
 			resourceFn: pcommon.NewResource,
-			insScopeFn: func() pcommon.InstrumentationScope {
-				return newScopeWithData()
-			},
+			insScopeFn: newScopeWithData,
 			expectedAdxTrace: &AdxTrace{
 				SpanStatus:         "STATUS_CODE_UNSET",
 				SpanKind:           "SPAN_KIND_UNSPECIFIED",
@@ -127,9 +123,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 			resourceFn: func() pcommon.Resource {
 				return newDummyResource()
 			},
-			insScopeFn: func() pcommon.InstrumentationScope {
-				return newScopeWithData()
-			},
+			insScopeFn: newScopeWithData,
 			expectedAdxTrace: &AdxTrace{
 				TraceId:            "00000000000000000000000000000064",
 				SpanId:             "0000000000000032",

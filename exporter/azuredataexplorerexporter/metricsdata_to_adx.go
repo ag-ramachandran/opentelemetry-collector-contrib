@@ -44,15 +44,15 @@ const (
 // This is derived from the specification https://opentelemetry.io/docs/reference/specification/metrics/datamodel/
 type AdxMetric struct {
 	Timestamp string //The timestamp of the occurrence. A metric is measured at a point of time. Formatted into string as RFC3339
-	//Including name, the Metric object is defined by the following properties:
-	MetricName        string                 //Name of the metric field
+	// Including name, the Metric object is defined by the following properties:
+	MetricName        string                 // Name of the metric field
 	MetricType        string                 // The data point type (e.g. Sum, Gauge, Histogram ExponentialHistogram, Summary)
 	MetricUnit        string                 // The metric stream’s unit
-	MetricDescription string                 //The metric stream’s description
+	MetricDescription string                 // The metric stream’s description
 	MetricValue       float64                // the value of the metric
 	MetricAttributes  map[string]interface{} // JSON attributes that can then be parsed. Extrinsic properties
 	//Additional properties
-	Host               string                 // the hostname for analysis of the metric. Extracted from https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/host/
+	Host               string                 // The hostname for analysis of the metric. Extracted from https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/host/
 	ResourceAttributes map[string]interface{} // The originating Resource attributes. Refer https://opentelemetry.io/docs/reference/specification/resource/sdk/
 }
 
@@ -103,7 +103,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, scopeattrs map[stri
 				case pmetric.NumberDataPointValueTypeInt:
 					metricValue = float64(dataPoint.IntVal())
 				case pmetric.NumberDataPointValueTypeDouble:
-					metricValue = float64(dataPoint.DoubleVal())
+					metricValue = dataPoint.DoubleVal()
 				}
 				return metricValue
 			}, "", "", pmetric.MetricDataTypeGauge)
@@ -119,9 +119,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, scopeattrs map[stri
 			// first, add one event for sum, and one for count
 			{
 				adxMetrics = append(adxMetrics,
-					createMetric(dataPoint.Timestamp().AsTime(), dataPoint.Attributes(), func() float64 {
-						return dataPoint.Sum()
-					},
+					createMetric(dataPoint.Timestamp().AsTime(), dataPoint.Attributes(), dataPoint.Sum,
 						fmt.Sprintf("%s_%s", md.Name(), sumsuffix),
 						fmt.Sprintf("%s%s", md.Description(), sumdescription),
 						pmetric.MetricDataTypeHistogram))
@@ -186,7 +184,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, scopeattrs map[stri
 				case pmetric.NumberDataPointValueTypeInt:
 					metricValue = float64(dataPoint.IntVal())
 				case pmetric.NumberDataPointValueTypeDouble:
-					metricValue = float64(dataPoint.DoubleVal())
+					metricValue = dataPoint.DoubleVal()
 				}
 				return metricValue
 			}, "", "", pmetric.MetricDataTypeSum)
@@ -231,9 +229,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, scopeattrs map[stri
 					copyMap(metricQuantile, dataPoint.Attributes().AsRaw())
 				adxMetrics = append(adxMetrics, createMetric(dataPoint.Timestamp().AsTime(),
 					pcommon.NewMapFromRaw(customMap),
-					func() float64 {
-						return dp.Value()
-					},
+					dp.Value,
 					quantileName,
 					fmt.Sprintf("%s%s", md.Description(), countdescription),
 					pmetric.MetricDataTypeSummary))
