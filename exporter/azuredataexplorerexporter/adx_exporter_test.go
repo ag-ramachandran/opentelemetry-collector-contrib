@@ -37,9 +37,9 @@ import (
 func TestNewExporter(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	c := Config{ClusterUri: "https://CLUSTER.kusto.windows.net",
-		ApplicationId:      "unknown",
+		ApplicationID:      "unknown",
 		ApplicationKey:     "unknown",
-		TenantId:           "unknown",
+		TenantID:           "unknown",
 		Database:           "not-configured",
 		MetricTable:        "OTELMetrics",
 		LogTable:           "OTELLogs",
@@ -187,8 +187,8 @@ func (m *mockingestor) FromFile(ctx context.Context, fPath string, options ...in
 	return &ingest.Result{}, nil
 }
 
-func (f *mockingestor) SetRecords(records []string) {
-	f.records = records
+func (m *mockingestor) SetRecords(records []string) {
+	m.records = records
 }
 
 // Name receives a copy of Foo since it doesn't need to modify it.
@@ -219,8 +219,8 @@ func createMetricsData(numberOfDataPoints int) pmetric.Metrics {
 }
 
 func createLogsData() plog.Logs {
-	spanId := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
-	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
+	spanID := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
+	traceID := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
 
 	logs := plog.NewLogs()
 	rm := logs.ResourceLogs().AppendEmpty()
@@ -232,8 +232,8 @@ func createLogsData() plog.Logs {
 	log.Body().SetStringVal("mylogsample")
 	log.Attributes().InsertString("test", "value")
 	log.SetTimestamp(ts)
-	log.SetSpanID(pcommon.NewSpanID(spanId))
-	log.SetTraceID(pcommon.NewTraceID(traceId))
+	log.SetSpanID(pcommon.NewSpanID(spanID))
+	log.SetTraceID(pcommon.NewTraceID(traceID))
 	log.SetSeverityNumber(plog.SeverityNumberDEBUG)
 	log.SetSeverityText("DEBUG")
 	return logs

@@ -49,7 +49,7 @@ func Test_rawMetricsToAdxMetrics(t *testing.T) {
 	rmap["key"] = "value"
 	rmap[hostkey] = testhost
 
-	//Metric map , with scopes
+	// Metric map , with scopes
 	mmap := make(map[string]interface{})
 	mmap[scopename] = "SN"
 	mmap[scopeversion] = "SV"
@@ -108,7 +108,7 @@ func Test_rawMetricsToAdxMetrics(t *testing.T) {
 					Host:               testhost,
 					ResourceAttributes: rmap,
 				},
-				//The list of buckets
+				// The list of buckets
 				{
 					Timestamp:          tstr,
 					MetricName:         "http.server.duration_bucket",
@@ -163,7 +163,7 @@ func Test_rawMetricsToAdxMetrics(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			metrics := tt.metricsDataFn(tt.metricDataType, ts)
-			actualMetrics, _ := rawMetricsToAdxMetrics(context.Background(), metrics, zap.NewNop())
+			actualMetrics := rawMetricsToAdxMetrics(context.Background(), metrics, zap.NewNop())
 			encoder := json.NewEncoder(ioutil.Discard)
 			for i, expectedMetric := range tt.expectedAdxMetrics {
 				assert.Equal(t, expectedMetric.Timestamp, actualMetrics[i].Timestamp)
@@ -202,10 +202,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 		configFn           func() *Config          // the config to apply
 	}{
 		{
-			name: "counter_over_time",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "counter_over_time",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				sumV := pmetric.NewMetric()
 				sumV.SetName("page_faults")
@@ -234,10 +232,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "int_counter_over_time",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "int_counter_over_time",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				sumV := pmetric.NewMetric()
 				sumV.SetName("page_faults")
@@ -267,10 +263,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 		},
 
 		{
-			name: "nil_counter_over_time",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "nil_counter_over_time",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				sumV := pmetric.NewMetric()
 				sumV.SetName("page_faults")
@@ -282,10 +276,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "simple_histogram_with_value",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "simple_histogram_with_value",
+			resourceFn: newDummyResource,
 			// Refers example from https://opentelemetry.io/docs/reference/specification/metrics/api/#instrument-unit
 			metricDataFn: func() pmetric.Metric {
 				histogram := pmetric.NewMetric()
@@ -328,7 +320,7 @@ func Test_mapToAdxMetric(t *testing.T) {
 					Host:               testhost,
 					ResourceAttributes: rmap,
 				},
-				//The list of buckets
+				// The list of buckets
 				{
 					Timestamp:          tstr,
 					MetricName:         "http.server.duration_bucket",

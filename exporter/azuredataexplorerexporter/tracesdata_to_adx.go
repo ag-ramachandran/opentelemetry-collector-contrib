@@ -18,22 +18,21 @@ import (
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/ptrace"
-	"go.uber.org/zap"
 )
 
 type AdxTrace struct {
-	TraceId            string                 //TraceId associated to the Trace
-	SpanId             string                 //SpanId associated to the Trace
-	ParentId           string                 //ParentId associated to the Trace
-	SpanName           string                 //The SpanName of the Trace
-	SpanStatus         string                 //The SpanStatus associated to the Trace
-	SpanKind           string                 //The SpanKind of the Trace
-	StartTime          string                 //The start time of the occurrence. Formatted into string as RFC3339
-	EndTime            string                 //The end time of the occurrence. Formatted into string as RFC3339
-	ResourceAttributes map[string]interface{} //JSON Resource attributes that can then be parsed.
-	TraceAttributes    map[string]interface{} //JSON attributes that can then be parsed.
-	Events             []*Event               //Array containing the events in a span
-	Links              []*Link                //Array containing the link in a span
+	TraceId            string                 // TraceId associated to the Trace
+	SpanId             string                 // SpanId associated to the Trace
+	ParentId           string                 // ParentId associated to the Trace
+	SpanName           string                 // The SpanName of the Trace
+	SpanStatus         string                 // The SpanStatus associated to the Trace
+	SpanKind           string                 // The SpanKind of the Trace
+	StartTime          string                 // The start time of the occurrence. Formatted into string as RFC3339
+	EndTime            string                 // The end time of the occurrence. Formatted into string as RFC3339
+	ResourceAttributes map[string]interface{} // JSON Resource attributes that can then be parsed.
+	TraceAttributes    map[string]interface{} // JSON attributes that can then be parsed.
+	Events             []*Event               // Array containing the events in a span
+	Links              []*Link                // Array containing the link in a span
 }
 
 type Event struct {
@@ -43,13 +42,13 @@ type Event struct {
 }
 
 type Link struct {
-	TraceId            string
-	SpanId             string
+	TraceID            string
+	SpanID             string
 	TraceState         string
 	SpanLinkAttributes map[string]interface{}
 }
 
-func mapToAdxTrace(resource pcommon.Resource, scope pcommon.InstrumentationScope, spanData ptrace.Span, logger *zap.Logger) *AdxTrace {
+func mapToAdxTrace(resource pcommon.Resource, scope pcommon.InstrumentationScope, spanData ptrace.Span) *AdxTrace {
 
 	traceAttrib := spanData.Attributes().AsRaw()
 	clonedTraceAttrib := cloneMap(traceAttrib)
@@ -89,8 +88,8 @@ func getLinksData(sd ptrace.Span) []*Link {
 	links := make([]*Link, sd.Links().Len())
 	for i := 0; i < sd.Links().Len(); i++ {
 		link := &Link{
-			TraceId:            sd.Links().At(i).TraceID().HexString(),
-			SpanId:             sd.Links().At(i).SpanID().HexString(),
+			TraceID:            sd.Links().At(i).TraceID().HexString(),
+			SpanID:             sd.Links().At(i).SpanID().HexString(),
 			TraceState:         string(sd.Links().At(i).TraceState()),
 			SpanLinkAttributes: sd.Links().At(i).Attributes().AsRaw(),
 		}

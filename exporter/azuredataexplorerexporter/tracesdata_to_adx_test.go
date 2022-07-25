@@ -21,19 +21,17 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/ptrace"
-	"go.uber.org/zap"
 )
 
 func Test_mapToAdxTrace(t *testing.T) {
-	logger := zap.NewNop()
 	epoch, _ := time.Parse("2006-01-02T15:04:05Z07:00", "1970-01-01T00:00:00Z")
 	defaultTime := pcommon.NewTimestampFromTime(epoch).AsTime().Format(time.RFC3339)
 	tmap := make(map[string]interface{})
 	tmap["key"] = "value"
 	tmap[hostkey] = testhost
 
-	spanId := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
-	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
+	spanID := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
+	traceID := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
 
 	tests := []struct {
 		name             string             // name of the test
@@ -49,8 +47,8 @@ func Test_mapToAdxTrace(t *testing.T) {
 				span := ptrace.NewSpan()
 				span.SetName("spanname")
 				span.Status().SetCode(ptrace.StatusCodeUnset)
-				span.SetTraceID(pcommon.NewTraceID(traceId))
-				span.SetSpanID(pcommon.NewSpanID(spanId))
+				span.SetTraceID(pcommon.NewTraceID(traceID))
+				span.SetSpanID(pcommon.NewSpanID(spanID))
 				span.SetKind(ptrace.SpanKindServer)
 				span.SetStartTimestamp(ts)
 				span.SetEndTimestamp(ts)
@@ -102,8 +100,8 @@ func Test_mapToAdxTrace(t *testing.T) {
 				span := ptrace.NewSpan()
 				span.SetName("spanname")
 				span.Status().SetCode(ptrace.StatusCodeUnset)
-				span.SetTraceID(pcommon.NewTraceID(traceId))
-				span.SetSpanID(pcommon.NewSpanID(spanId))
+				span.SetTraceID(pcommon.NewTraceID(traceID))
+				span.SetSpanID(pcommon.NewSpanID(spanID))
 				span.SetKind(ptrace.SpanKindServer)
 				span.SetStartTimestamp(ts)
 				span.SetEndTimestamp(ts)
@@ -114,8 +112,8 @@ func Test_mapToAdxTrace(t *testing.T) {
 				event.Attributes().InsertString("eventkey", "eventvalue")
 
 				link := span.Links().AppendEmpty()
-				link.SetSpanID(pcommon.NewSpanID(spanId))
-				link.SetTraceID(pcommon.NewTraceID(traceId))
+				link.SetSpanID(pcommon.NewSpanID(spanID))
+				link.SetTraceID(pcommon.NewTraceID(traceID))
 				link.SetTraceState(ptrace.TraceStateEmpty)
 
 				return span
@@ -143,8 +141,8 @@ func Test_mapToAdxTrace(t *testing.T) {
 					},
 				},
 				Links: []*Link{{
-					TraceId:            "00000000000000000000000000000064",
-					SpanId:             "0000000000000032",
+					TraceID:            "00000000000000000000000000000064",
+					SpanID:             "0000000000000032",
 					TraceState:         string(ptrace.TraceStateEmpty),
 					SpanLinkAttributes: newMapFromAttr(`{}`),
 				}},
@@ -154,7 +152,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			want := tt.expectedAdxTrace
-			got := mapToAdxTrace(tt.resourceFn(), tt.insScopeFn(), tt.spanDatafn(), logger)
+			got := mapToAdxTrace(tt.resourceFn(), tt.insScopeFn(), tt.spanDatafn())
 			require.NotNil(t, got)
 			assert.Equal(t, want, got)
 

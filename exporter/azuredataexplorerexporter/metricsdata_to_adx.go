@@ -51,7 +51,7 @@ type AdxMetric struct {
 	MetricDescription string                 // The metric stream’s description
 	MetricValue       float64                // the value of the metric
 	MetricAttributes  map[string]interface{} // JSON attributes that can then be parsed. Extrinsic properties
-	//Additional properties
+	// Additional properties
 	Host               string                 // The hostname for analysis of the metric. Extracted from https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/host/
 	ResourceAttributes map[string]interface{} // The originating Resource attributes. Refer https://opentelemetry.io/docs/reference/specification/resource/sdk/
 }
@@ -199,7 +199,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, scopeattrs map[stri
 			// first, add one event for sum, and one for count
 			{
 				adxMetrics = append(adxMetrics, createMetric(dataPoint.Timestamp().AsTime(), dataPoint.Attributes(), func() float64 {
-					return float64(dataPoint.Sum())
+					return dataPoint.Sum()
 				},
 					fmt.Sprintf("%s_%s", md.Name(), sumsuffix),
 					fmt.Sprintf("%s%s", md.Description(), sumdescription),
@@ -247,7 +247,7 @@ func mapToAdxMetric(res pcommon.Resource, md pmetric.Metric, scopeattrs map[stri
 }
 
 // Given all the metrics , transform that to the representative structure
-func rawMetricsToAdxMetrics(_ context.Context, metrics pmetric.Metrics, logger *zap.Logger) ([]*AdxMetric, error) {
+func rawMetricsToAdxMetrics(_ context.Context, metrics pmetric.Metrics, logger *zap.Logger) []*AdxMetric {
 	var transformedAdxMetrics []*AdxMetric
 	resourceMetric := metrics.ResourceMetrics()
 	for i := 0; i < resourceMetric.Len(); i++ {
@@ -263,7 +263,7 @@ func rawMetricsToAdxMetrics(_ context.Context, metrics pmetric.Metrics, logger *
 			}
 		}
 	}
-	return transformedAdxMetrics, nil
+	return transformedAdxMetrics
 }
 
 func copyMap(toAttrib map[string]interface{}, fromAttrib map[string]interface{}) map[string]interface{} {
