@@ -28,8 +28,8 @@ type AdxTrace struct {
 	SpanName           string                 //The SpanName of the Trace
 	SpanStatus         string                 //The SpanStatus associated to the Trace
 	SpanKind           string                 //The SpanKind of the Trace
-	StartTime          string                 //The start time of the occurance. Formatted into string as RFC3339
-	EndTime            string                 //The end time of the occurance. Formatted into string as RFC3339
+	StartTime          string                 //The start time of the occurrence. Formatted into string as RFC3339
+	EndTime            string                 //The end time of the occurrence. Formatted into string as RFC3339
 	ResourceAttributes map[string]interface{} //JSON Resource attributes that can then be parsed.
 	TraceAttributes    map[string]interface{} //JSON attributes that can then be parsed.
 	Events             []*Event               //Array containing the events in a span

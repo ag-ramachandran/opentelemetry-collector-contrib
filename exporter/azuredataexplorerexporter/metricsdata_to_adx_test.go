@@ -174,7 +174,7 @@ func Test_rawMetricsToAdxMetrics(t *testing.T) {
 				assert.Equal(t, expectedMetric.MetricDescription, actualMetrics[i].MetricDescription)
 				assert.Equal(t, expectedMetric.MetricUnit, actualMetrics[i].MetricUnit)
 				assert.Equal(t, expectedMetric.MetricAttributes, actualMetrics[i].MetricAttributes)
-				// Host as seperate column
+				// Host as separate column
 				assert.Equal(t, expectedMetric.Host, actualMetrics[i].Host)
 				// Resource attributes
 				assert.Equal(t, expectedMetric.ResourceAttributes, actualMetrics[i].ResourceAttributes)
@@ -595,7 +595,7 @@ func Test_mapToAdxMetric(t *testing.T) {
 				assert.Equal(t, expectedMetric.MetricDescription, actualMetrics[i].MetricDescription)
 				assert.Equal(t, expectedMetric.MetricUnit, actualMetrics[i].MetricUnit)
 				assert.Equal(t, expectedMetric.MetricAttributes, actualMetrics[i].MetricAttributes)
-				// Host as seperate column
+				// Host as separate column
 				assert.Equal(t, expectedMetric.Host, actualMetrics[i].Host)
 				// Resource attributes
 				assert.Equal(t, expectedMetric.ResourceAttributes, actualMetrics[i].ResourceAttributes)

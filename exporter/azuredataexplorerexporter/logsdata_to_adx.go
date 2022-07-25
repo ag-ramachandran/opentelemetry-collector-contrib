@@ -22,7 +22,7 @@ import (
 )
 
 type AdxLog struct {
-	Timestamp          string                 //The timestamp of the occurance. Formatted into string as RFC3339
+	Timestamp          string                 //The timestamp of the occurrence. Formatted into string as RFC3339
 	ObservedTimestamp  string                 //The timestamp of logs observed in opentelemetry collector.  Formatted into string as RFC3339
 	TraceId            string                 //TraceId associated to the log
 	SpanId             string                 //SpanId associated to the log

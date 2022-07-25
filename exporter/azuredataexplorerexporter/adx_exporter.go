@@ -238,7 +238,7 @@ func buildAdxClient(config *Config) (*kusto.Client, error) {
 	return client, err
 }
 
-// Depending on the table , create seperate ingestors
+// Depending on the table , create separate ingestors
 func createManagedStreamingIngestor(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Managed, error) {
 	ingestor, err := ingest.NewManaged(adxclient, config.Database, tablename)
 	return ingestor, err
