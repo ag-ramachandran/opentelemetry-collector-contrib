@@ -448,10 +448,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "summary",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "summary",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				summary := pmetric.NewMetric()
 				summary.SetName("http.server.duration")
@@ -522,10 +520,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "nil_summary",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "nil_summary",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				summary := pmetric.NewMetric()
 				summary.SetName("nil_summary")
@@ -549,10 +545,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "unknown_type",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "unknown_type",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				metric := pmetric.NewMetric()
 				metric.SetName("unknown_with_dims")
