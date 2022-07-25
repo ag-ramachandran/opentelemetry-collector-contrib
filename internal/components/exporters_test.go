@@ -275,7 +275,6 @@ func TestDefaultExporters(t *testing.T) {
 			getConfigFn: func() config.Exporter {
 				cfg := expFactories["azuredataexplorer"].CreateDefaultConfig().(*azuredataexplorerexporter.Config)
 				cfg.Endpoint = "http://" + endpoint
-
 				return cfg
 			},
 		},
