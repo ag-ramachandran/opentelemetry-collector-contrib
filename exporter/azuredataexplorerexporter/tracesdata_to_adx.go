@@ -21,9 +21,9 @@ import (
 )
 
 type AdxTrace struct {
-	TraceId            string                 // TraceId associated to the Trace
-	SpanId             string                 // SpanId associated to the Trace
-	ParentId           string                 // ParentId associated to the Trace
+	TraceID            string                 // TraceId associated to the Trace
+	SpanID             string                 // SpanId associated to the Trace
+	ParentID           string                 // ParentId associated to the Trace
 	SpanName           string                 // The SpanName of the Trace
 	SpanStatus         string                 // The SpanStatus associated to the Trace
 	SpanKind           string                 // The SpanKind of the Trace
@@ -55,9 +55,9 @@ func mapToAdxTrace(resource pcommon.Resource, scope pcommon.InstrumentationScope
 	copyMap(clonedTraceAttrib, getScopeMap(scope))
 
 	return &AdxTrace{
-		TraceId:            spanData.TraceID().HexString(),
-		SpanId:             spanData.SpanID().HexString(),
-		ParentId:           spanData.ParentSpanID().HexString(),
+		TraceID:            spanData.TraceID().HexString(),
+		SpanID:             spanData.SpanID().HexString(),
+		ParentID:           spanData.ParentSpanID().HexString(),
 		SpanName:           spanData.Name(),
 		SpanStatus:         spanData.Status().Code().String(),
 		SpanKind:           spanData.Kind().String(),

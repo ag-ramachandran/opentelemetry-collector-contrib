@@ -46,7 +46,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(
 		t,
 		&Config{
-			ClusterUri:     "https://CLUSTER.kusto.windows.net",
+			ClusterURI:     "https://CLUSTER.kusto.windows.net",
 			ApplicationID:  "f80da32c-108c-415c-a19e-643f461a677a",
 			ApplicationKey: "xx-xx-xx-xx",
 			TenantID:       "21ff9e36-fbaa-43c8-98ba-00431ea10bc3",

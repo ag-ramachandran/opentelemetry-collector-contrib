@@ -54,11 +54,11 @@ func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric
 	metricsBuffer := make([]string, len(transformedAdxMetrics))
 	// Since the transform succeeded ,  using the option for ingestion ingest the data into ADX
 	for idx, tm := range transformedAdxMetrics {
-		adxMetricJsonString, err := jsoniter.MarshalToString(tm)
+		adxMetricJSONString, err := jsoniter.MarshalToString(tm)
 		if err != nil {
 			e.logger.Error("Error performing serialization of data.", zap.Error(err))
 		}
-		metricsBuffer[idx] = adxMetricJsonString
+		metricsBuffer[idx] = adxMetricJSONString
 	}
 	if len(metricsBuffer) != 0 {
 		if err := e.ingestData(metricsBuffer); err != nil {
@@ -228,7 +228,7 @@ func buildAdxClient(config *Config) (*kusto.Client, error) {
 		Config: auth.NewClientCredentialsConfig(config.ApplicationID,
 			config.ApplicationKey, config.TenantID),
 	}
-	client, err := kusto.New(config.ClusterUri, authorizer)
+	client, err := kusto.New(config.ClusterURI, authorizer)
 	return client, err
 }
 

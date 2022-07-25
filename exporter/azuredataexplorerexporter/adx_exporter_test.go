@@ -36,7 +36,7 @@ import (
 
 func TestNewExporter(t *testing.T) {
 	logger := zaptest.NewLogger(t)
-	c := Config{ClusterUri: "https://CLUSTER.kusto.windows.net",
+	c := Config{ClusterURI: "https://CLUSTER.kusto.windows.net",
 		ApplicationID:      "unknown",
 		ApplicationKey:     "unknown",
 		TenantID:           "unknown",
@@ -192,8 +192,8 @@ func (m *mockingestor) SetRecords(records []string) {
 }
 
 // Name receives a copy of Foo since it doesn't need to modify it.
-func (f *mockingestor) Records() []string {
-	return f.records
+func (m *mockingestor) Records() []string {
+	return m.records
 }
 
 func (m *mockingestor) Close() error {
@@ -241,8 +241,8 @@ func createLogsData() plog.Logs {
 }
 
 func createTracesData() ptrace.Traces {
-	spanId := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
-	traceId := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
+	spanID := [8]byte{0, 0, 0, 0, 0, 0, 0, 50}
+	traceID := [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100}
 
 	traces := ptrace.NewTraces()
 	rm := traces.ResourceSpans().AppendEmpty()
@@ -255,8 +255,8 @@ func createTracesData() ptrace.Traces {
 	span.SetKind(ptrace.SpanKindServer)
 	span.SetStartTimestamp(ts)
 	span.SetEndTimestamp(ts)
-	span.SetSpanID(pcommon.NewSpanID(spanId))
-	span.SetTraceID(pcommon.NewTraceID(traceId))
+	span.SetSpanID(pcommon.NewSpanID(spanID))
+	span.SetTraceID(pcommon.NewTraceID(traceID))
 	span.SetTraceState(ptrace.TraceStateEmpty)
 	span.Attributes().InsertString("key", "val")
 	return traces

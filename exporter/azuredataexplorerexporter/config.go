@@ -25,7 +25,7 @@ import (
 // Config defines configuration for Azure Monitor
 type Config struct {
 	config.ExporterSettings `mapstructure:",squash"`
-	ClusterUri              string `mapstructure:"cluster_uri"`
+	ClusterURI              string `mapstructure:"cluster_uri"`
 	ApplicationID           string `mapstructure:"application_id"`
 	ApplicationKey          string `mapstructure:"application_key"`
 	TenantID                string `mapstructure:"tenant_id"`
@@ -45,7 +45,7 @@ func (adxCfg *Config) Validate() error {
 		return errors.New("ADX config is nil / not provided")
 	}
 
-	if isEmpty(adxCfg.ClusterUri) || isEmpty(adxCfg.ApplicationID) || isEmpty(adxCfg.ApplicationKey) || isEmpty(adxCfg.TenantID) {
+	if isEmpty(adxCfg.ClusterURI) || isEmpty(adxCfg.ApplicationID) || isEmpty(adxCfg.ApplicationKey) || isEmpty(adxCfg.TenantID) {
 		return errors.New(`mandatory configurations "cluster_uri" ,"application_id" , "application_key" and "tenant_id" are missing or empty `)
 	}
 

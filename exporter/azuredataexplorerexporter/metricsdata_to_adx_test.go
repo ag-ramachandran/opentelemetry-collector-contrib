@@ -371,10 +371,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "nil_gauge_value",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "nil_gauge_value",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				gauge := pmetric.NewMetric()
 				gauge.SetName("cpu.frequency")
@@ -388,10 +386,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "int_gauge_value",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "int_gauge_value",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				gauge := pmetric.NewMetric()
 				gauge.SetName("cpu.frequency")
@@ -421,10 +417,8 @@ func Test_mapToAdxMetric(t *testing.T) {
 			},
 		},
 		{
-			name: "float_gauge_value",
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			name:       "float_gauge_value",
+			resourceFn: newDummyResource,
 			metricDataFn: func() pmetric.Metric {
 				gauge := pmetric.NewMetric()
 				gauge.SetName("cpu.frequency")
