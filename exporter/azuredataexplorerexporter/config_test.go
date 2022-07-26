@@ -60,6 +60,7 @@ func TestLoadConfig(t *testing.T) {
 
 	// The second one has a validation error
 	exporter = cfg.Exporters[config.NewComponentIDWithName(typeStr, "2")].(*Config)
+	require.NotNil(t, exporter)
 	err2 := cfg.Validate()
 	assert.EqualError(t, err2, `exporter "azuredataexplorer/2" has invalid configuration: mandatory configurations "cluster_uri" ,"application_id" , "application_key" and "tenant_id" are missing or empty `)
 }

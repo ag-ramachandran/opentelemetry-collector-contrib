@@ -61,10 +61,9 @@ func Test_rawMetricsToAdxMetrics(t *testing.T) {
 		expectedAdxMetrics []*AdxMetric // expected results
 	}{
 		{
-			name: "metrics_counter_over_time",
-			metricsDataFn: func(metricType pmetric.MetricDataType, ts pcommon.Timestamp) pmetric.Metrics {
-				return newMetrics(metricType, ts)
-			},
+			//
+			name:           "metrics_counter_over_time",
+			metricsDataFn:  newMetrics,
 			metricDataType: pmetric.MetricDataTypeSum,
 			expectedAdxMetrics: []*AdxMetric{
 				{
@@ -80,10 +79,8 @@ func Test_rawMetricsToAdxMetrics(t *testing.T) {
 			},
 		},
 		{
-			name: "metrics_simple_histogram_with_value",
-			metricsDataFn: func(metricType pmetric.MetricDataType, ts pcommon.Timestamp) pmetric.Metrics {
-				return newMetrics(metricType, ts)
-			},
+			name:           "metrics_simple_histogram_with_value",
+			metricsDataFn:  newMetrics,
 			metricDataType: pmetric.MetricDataTypeHistogram,
 			expectedAdxMetrics: []*AdxMetric{
 				{
@@ -595,7 +592,11 @@ func newDummyResource() pcommon.Resource {
 
 func newMapFromAttr(jsonStr string) map[string]interface{} {
 	dynamic := make(map[string]interface{})
-	json.Unmarshal([]byte(jsonStr), &dynamic)
+	err := json.Unmarshal([]byte(jsonStr), &dynamic)
+	// If there is a failure , send the error back in a map
+	if err != nil {
+		return map[string]interface{}{"err": err.Error()}
+	}
 	return dynamic
 }
 

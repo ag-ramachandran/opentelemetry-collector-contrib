@@ -56,9 +56,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 
 				return span
 			},
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			resourceFn: newDummyResource,
 			insScopeFn: newScopeWithData,
 			expectedAdxTrace: &AdxTrace{
 				TraceID:            "00000000000000000000000000000064",
@@ -118,9 +116,7 @@ func Test_mapToAdxTrace(t *testing.T) {
 
 				return span
 			},
-			resourceFn: func() pcommon.Resource {
-				return newDummyResource()
-			},
+			resourceFn: newDummyResource,
 			insScopeFn: newScopeWithData,
 			expectedAdxTrace: &AdxTrace{
 				TraceID:            "00000000000000000000000000000064",
