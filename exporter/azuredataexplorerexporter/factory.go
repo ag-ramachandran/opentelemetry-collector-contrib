@@ -52,11 +52,12 @@ func NewFactory() component.ExporterFactory {
 /*Create default configurations*/
 func createDefaultConfig() config.Exporter {
 	return &Config{
-		Database:      otelDb,
-		MetricTable:   defaultMetricTable,
-		LogTable:      defaultLogTable,
-		TraceTable:    defaultTraceTable,
-		IngestionType: queuedIngestTest,
+		ExporterSettings: config.NewExporterSettings(config.NewComponentID(typeStr)),
+		Database:         otelDb,
+		MetricTable:      defaultMetricTable,
+		LogTable:         defaultLogTable,
+		TraceTable:       defaultTraceTable,
+		IngestionType:    queuedIngestTest,
 	}
 }
 
