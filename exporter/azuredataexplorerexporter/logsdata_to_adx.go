@@ -34,8 +34,6 @@ type AdxLog struct {
 }
 
 // Convert the plog to the type ADXLog, this matches the scheme in the Log table in the database
-
-
 func mapToAdxLog(resource pcommon.Resource, scope pcommon.InstrumentationScope, logData plog.LogRecord, _ *zap.Logger) *AdxLog {
 
 	logAttrib := logData.Attributes().AsRaw()
