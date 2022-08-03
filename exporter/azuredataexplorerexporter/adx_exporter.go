@@ -142,11 +142,9 @@ func (e *adxDataProducer) Close(context.Context) error {
 	var err error
 
 	err = e.ingestor.Close()
-	err2 := e.client.Close()
-	if err == nil {
-		err = err2
-	} else {
-		err = kustoerrors.GetCombinedError(err, err2)
+
+	if clientErr := e.client.Close(); clientErr != nil {
+		err = kustoerrors.GetCombinedError(err, clientErr)
 	}
 	if err != nil {
 		e.logger.Warn("Error closing connections", zap.Error(err))
@@ -199,11 +197,7 @@ func newExporter(config *Config, logger *zap.Logger, telemetryDataType int) (*ad
 	}, nil
 }
 
-/**
-Common functions that are used by all the 3 parts of OTEL , namely Traces , Logs and Metrics
-*/
-
-/* Fetchs the coresponding ingetionRef if the mapping is provided*/
+// Fetches the corresponding ingestionRef if the mapping is provided
 func getMappingRef(config *Config, telemetryDataType int) ingest.FileOption {
 	switch telemetryDataType {
 	case metricsType:
@@ -231,7 +225,7 @@ func buildAdxClient(config *Config) (*kusto.Client, error) {
 	return client, err
 }
 
-// Depending on the table , create separate ingestors
+// Depending on the table, create separate ingestors
 func createManagedStreamingIngestor(config *Config, adxclient *kusto.Client, tablename string) (*ingest.Managed, error) {
 	ingestor, err := ingest.NewManaged(adxclient, config.Database, tablename)
 	return ingestor, err
