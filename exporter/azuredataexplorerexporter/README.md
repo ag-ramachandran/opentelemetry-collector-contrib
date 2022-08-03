@@ -1,5 +1,11 @@
 # Azure Data Explorer Exporter
 
+| Status                   |           |
+| ------------------------ | --------- |
+| Stability                | [alpha]   |
+| Supported pipeline types | logs,metrics,traces  |
+| Distributions            | [contrib] |
+
 This exporter sends metrics, logs and trace data to [Azure Data Explorer](https://azure.microsoft.com/services/data-explorer/).
 
 ## Configuration
@@ -12,11 +18,11 @@ The following settings are required:
 - `tenant_id` (no default): The tenant id where the application_id is referenced from.
 
 The following settings can be optionally configured and have default values:
-> Note that the database , tables are expected to be created upfront before the exporter is in operation , the definition of these are in the section [Database and Table definition scripts](#database-and-table-definition-scripts)
+> Note that the database tables are expected to be created upfront before the exporter is in operation , the definition of these are in the section [Database and Table definition scripts](#database-and-table-definition-scripts)
 - `db_name` (default = "oteldb"): The ADX database where the tables are present to ingest the data.
 - `metrics_table_name` (default = OTELMetrics): The target table in the database `db_name` that stores exported metric data.
 - `logs_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported logs data.
-- `traces_table_name` (default = OTELLogs): The target table in the database `db_name` that stores exported traces data.
+- `traces_table_name` (default = OTELTraces): The target table in the database `db_name` that stores exported traces data.
 
   Optionally the following table mappings can be specified if the data needs to be mapped to a different table on ADX. This uses json [table mapping](https://docs.microsoft.com/azure/data-explorer/kusto/management/mappings#json-mapping) that can be used to map [attributes](#attribute-mapping) to target tables
 - `metrics_table_json_mapping` (optional, no default): The table mapping name to be used for the table `db_name`.`metrics_table_name` 

@@ -33,10 +33,10 @@ import (
 
 // adxDataProducer uses the ADX client to perform ingestion
 type adxDataProducer struct {
-	client        *kusto.Client       // client for logs , traces and metrics
-	ingestor      ingest.Ingestor     // ingestion for  logs, traces and metrics
-	ingestOptions []ingest.FileOption // Options for the ingestion
-	logger        *zap.Logger         // Loggers for tracing the flow
+	client        *kusto.Client       // client for logs, traces and metrics
+	ingestor      ingest.Ingestor     // ingestion for logs, traces and metrics
+	ingestOptions []ingest.FileOption // options for the ingestion
+	logger        *zap.Logger         // logger for tracing the flow
 }
 
 const nextline = "\n"
@@ -48,11 +48,11 @@ const (
 	scopeversion = "scope.version"
 )
 
-// given the full metrics , extract each metric , resource attributes and scope attributes. Individual metric mapping is sent on to metricdata mapping
+// given the full metrics, extract each metric, resource attributes and scope attributes. Individual metric mapping is sent on to metricdata mapping
 func (e *adxDataProducer) metricsDataPusher(ctx context.Context, metrics pmetric.Metrics) error {
 	transformedAdxMetrics := rawMetricsToAdxMetrics(ctx, metrics, e.logger)
 	metricsBuffer := make([]string, len(transformedAdxMetrics))
-	// Since the transform succeeded ,  using the option for ingestion ingest the data into ADX
+	// since the transform succeeded, using the option for ingestion ingest the data into ADX
 	for idx, tm := range transformedAdxMetrics {
 		adxMetricJSONString, err := jsoniter.MarshalToString(tm)
 		if err != nil {
@@ -156,9 +156,8 @@ func (e *adxDataProducer) Close(context.Context) error {
 	return err
 }
 
-/*
-Create an exporter. The exporter instantiates a client , creates the ingestor and then sends data through it
-*/
+// Create an exporter. The exporter instantiates a client , creates the ingestor and then sends data through it
+
 func newExporter(config *Config, logger *zap.Logger, telemetryDataType int) (*adxDataProducer, error) {
 	tableName, err := getTableName(config, telemetryDataType)
 	if err != nil {
