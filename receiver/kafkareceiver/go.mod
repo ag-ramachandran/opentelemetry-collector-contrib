@@ -16,7 +16,7 @@ require (
 	go.opencensus.io v0.23.0
 	go.opentelemetry.io/collector v0.56.0
 	go.opentelemetry.io/collector/pdata v0.56.0
-	go.opentelemetry.io/collector/semconv v0.56.0
+	go.opentelemetry.io/collector/semconv v0.58.0
 	go.uber.org/zap v1.21.0
 )
 
