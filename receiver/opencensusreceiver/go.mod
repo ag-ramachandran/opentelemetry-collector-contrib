@@ -14,11 +14,11 @@ require (
 	github.com/stretchr/testify v1.8.0
 	go.opentelemetry.io/collector v0.61.0
 	go.opentelemetry.io/collector/pdata v0.61.0
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.36.0
-	go.opentelemetry.io/otel v1.10.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.36.4
+	go.opentelemetry.io/otel v1.11.1
 	go.opentelemetry.io/otel/sdk v1.10.0
-	go.opentelemetry.io/otel/trace v1.10.0
-	google.golang.org/grpc v1.49.0
+	go.opentelemetry.io/otel/trace v1.11.1
+	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 )
 
