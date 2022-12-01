@@ -5,7 +5,7 @@ change_type: bug_fix
 component: exporter/azuredataexplorerexporter
 
 # A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
-note: Makes timestamp precision to nanos
+note: Makes timestamp precision to nanos, updated azure-kusto-go to 0.9.2
 
 # One or more tracking issues related to the change
 issues: [16546]
