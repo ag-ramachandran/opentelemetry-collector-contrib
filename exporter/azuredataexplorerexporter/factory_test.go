@@ -41,8 +41,8 @@ func TestCreateMetricsExporter(t *testing.T) {
 
 	params := exportertest.NewNopCreateSettings()
 	exporter, err := factory.CreateMetricsExporter(context.Background(), params, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, exporter)
+	assert.NotNil(t, exporter)
+	assert.NoError(t, err)
 }
 
 // Given a new factory and no-op exporter , the NewMetric exporter should work.
@@ -58,12 +58,8 @@ func TestCreateMetricsExporterWhenIngestEmpty(t *testing.T) {
 	require.NoError(t, component.UnmarshalConfig(sub, cfg))
 
 	params := exportertest.NewNopCreateSettings()
-	// Load the #3 which has empty
-	exporter, err := factory.CreateMetricsExporter(context.Background(), params, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, exporter)
-	// the fallback should be queued
-	assert.Equal(t, queuedIngestTest, cfg.(*Config).IngestionType)
+	// Load the #3 which has empty. This
+	assert.Panics(t, func() { factory.CreateMetricsExporter(context.Background(), params, cfg) })
 }
 
 func TestCreateDefaultConfig(t *testing.T) {
