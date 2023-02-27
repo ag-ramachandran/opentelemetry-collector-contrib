@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/Azure/azure-kusto-go v0.11.0
-	github.com/Azure/go-autorest/autorest/azure/auth v0.5.11
 	github.com/json-iterator/go v1.1.12
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.72.0
 	github.com/stretchr/testify v1.8.1
@@ -26,7 +25,6 @@ require (
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest v0.11.28 // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.9.22 // indirect
-	github.com/Azure/go-autorest/autorest/azure/cli v0.4.5 // indirect
 	github.com/Azure/go-autorest/autorest/date v0.3.0 // indirect
 	github.com/Azure/go-autorest/logger v0.2.1 // indirect
 	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
@@ -34,17 +32,20 @@ require (
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dimchansky/utfbom v1.1.1 // indirect
+	github.com/felixge/httpsnoop v1.0.3 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/klauspost/compress v1.15.15 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mattn/go-ieproxy v0.0.1 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -52,10 +53,12 @@ require (
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/rs/cors v1.8.3 // indirect
 	github.com/samber/lo v1.37.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/collector/consumer v0.72.0 // indirect
 	go.opentelemetry.io/collector/featuregate v0.72.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.39.0 // indirect
 	go.opentelemetry.io/otel v1.13.0 // indirect
 	go.opentelemetry.io/otel/metric v0.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.13.0 // indirect
