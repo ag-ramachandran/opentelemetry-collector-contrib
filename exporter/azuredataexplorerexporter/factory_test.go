@@ -59,7 +59,7 @@ func TestCreateMetricsExporterWhenIngestEmpty(t *testing.T) {
 
 	params := exportertest.NewNopCreateSettings()
 	// Load the #3 which has empty. This
-	assert.Panics(t, func() { factory.CreateMetricsExporter(context.Background(), params, cfg) })
+	assert.Panics(t, func() { _, _ = factory.CreateMetricsExporter(context.Background(), params, cfg) })
 }
 
 func TestCreateDefaultConfig(t *testing.T) {
@@ -84,8 +84,9 @@ func TestCreateLogsExporter(t *testing.T) {
 
 	params := exportertest.NewNopCreateSettings()
 	exporter, err := factory.CreateLogsExporter(context.Background(), params, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, exporter)
+	// Load the #3 which has empty. This
+	assert.NotNil(t, exporter)
+	assert.NoError(t, err)
 }
 
 // Given a new factory and no-op exporter , the NewLogs exporter should work.
@@ -102,11 +103,8 @@ func TestCreateLogsExporterWhenIngestEmpty(t *testing.T) {
 
 	params := exportertest.NewNopCreateSettings()
 	// Load the #3 which has empty
-	exporter, err := factory.CreateLogsExporter(context.Background(), params, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, exporter)
-	// the fallback should be queued
-	assert.Equal(t, queuedIngestTest, cfg.(*Config).IngestionType)
+	// exporter, err := factory.CreateLogsExporter(context.Background(), params, cfg)
+	assert.Panics(t, func() { _, _ = factory.CreateLogsExporter(context.Background(), params, cfg) })
 }
 
 // Given a new factory and no-op exporter , the LogExporter exporter should work.
@@ -123,8 +121,8 @@ func TestCreateTracesExporter(t *testing.T) {
 
 	params := exportertest.NewNopCreateSettings()
 	exporter, err := factory.CreateTracesExporter(context.Background(), params, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, exporter)
+	assert.NotNil(t, exporter)
+	assert.NoError(t, err)
 }
 
 // Given a new factory and no-op exporter , the NewLogs exporter should work.
@@ -141,9 +139,5 @@ func TestCreateTracesExporterWhenIngestEmpty(t *testing.T) {
 
 	params := exportertest.NewNopCreateSettings()
 	// Load the #3 which has empty
-	exporter, err := factory.CreateTracesExporter(context.Background(), params, cfg)
-	assert.NotNil(t, err)
-	assert.Nil(t, exporter)
-	// the fallback should be queued
-	assert.Equal(t, queuedIngestTest, cfg.(*Config).IngestionType)
+	assert.Panics(t, func() { _, _ = factory.CreateTracesExporter(context.Background(), params, cfg) })
 }
