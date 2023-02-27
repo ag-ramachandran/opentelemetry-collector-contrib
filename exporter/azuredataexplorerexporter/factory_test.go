@@ -18,6 +18,7 @@ import (
 	"context"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,6 +26,10 @@ import (
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
 	"go.opentelemetry.io/collector/exporter/exportertest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/plog"
+	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
 // Given a new factory and no-op exporter , the NewMetric exporter should work.
@@ -43,6 +48,18 @@ func TestCreateMetricsExporter(t *testing.T) {
 	exporter, err := factory.CreateMetricsExporter(context.Background(), params, cfg)
 	assert.NotNil(t, exporter)
 	assert.NoError(t, err)
+
+	// Test the errors, as the auth will fail here.Error while getting token, as the cluster is empty
+	testMetrics := pmetric.NewMetrics()
+	m := testMetrics.ResourceMetrics().AppendEmpty().ScopeMetrics().AppendEmpty().Metrics().AppendEmpty()
+	m.SetName("MetricsUnitTest")
+	dp := m.SetEmptyGauge().DataPoints().AppendEmpty()
+	dp.Attributes().PutStr("k0", "v0")
+	dp.SetTimestamp(pcommon.NewTimestampFromTime(time.Now()))
+	dp.SetDoubleValue(42.42)
+	err = exporter.ConsumeMetrics(context.Background(), testMetrics)
+	assert.Error(t, err)
+	assert.Nil(t, exporter.Shutdown(context.Background()))
 }
 
 // Given a new factory and no-op exporter , the NewMetric exporter should work.
@@ -87,6 +104,17 @@ func TestCreateLogsExporter(t *testing.T) {
 	// Load the #3 which has empty. This
 	assert.NotNil(t, exporter)
 	assert.NoError(t, err)
+
+	// Test the errors, as the auth will fail here.Error while getting token, as the cluster is empty
+	testLogs := plog.NewLogs()
+	testLogs.ResourceLogs().AppendEmpty()
+	testLogs.ResourceLogs().At(0).ScopeLogs().AppendEmpty()
+	testLogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords().AppendEmpty()
+	testLogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords().At(0).SetTraceID([16]byte{1, 2, 3, 4})
+	// This will fail with auth failure
+	err = exporter.ConsumeLogs(context.Background(), testLogs)
+	assert.Error(t, err)
+	assert.Nil(t, exporter.Shutdown(context.Background()))
 }
 
 // Given a new factory and no-op exporter , the NewLogs exporter should work.
@@ -123,6 +151,15 @@ func TestCreateTracesExporter(t *testing.T) {
 	exporter, err := factory.CreateTracesExporter(context.Background(), params, cfg)
 	assert.NotNil(t, exporter)
 	assert.NoError(t, err)
+
+	// Error while getting token, as the cluster is empty
+	testTraces := ptrace.NewTraces()
+	rs := testTraces.ResourceSpans().AppendEmpty()
+	ss := rs.ScopeSpans().AppendEmpty()
+	ss.Spans().AppendEmpty()
+	err = exporter.ConsumeTraces(context.Background(), testTraces)
+	assert.Error(t, err)
+	assert.Nil(t, exporter.Shutdown(context.Background()))
 }
 
 // Given a new factory and no-op exporter , the NewLogs exporter should work.
