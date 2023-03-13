@@ -5,7 +5,7 @@ go 1.19
 require (
 	go.opentelemetry.io/collector v0.72.0
 	go.opentelemetry.io/collector/component v0.72.0
-	go.opentelemetry.io/collector/pdata v1.0.0-rc6
+	go.opentelemetry.io/collector/pdata v1.0.0-rc7
 )
 
 require (
