@@ -12,7 +12,7 @@ require (
 	go.opentelemetry.io/collector/confmap v0.72.0
 	go.opentelemetry.io/collector/consumer v0.72.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rc6
-	go.opentelemetry.io/collector/semconv v0.72.0
+	go.opentelemetry.io/collector/semconv v0.73.0
 	go.uber.org/atomic v1.10.0
 	google.golang.org/grpc v1.53.0
 	skywalking.apache.org/repo/goapi v0.0.0-20211122071111-ffc517fbfe21
