@@ -9,7 +9,7 @@ require (
 	go.opentelemetry.io/collector/consumer v0.74.0
 	go.opentelemetry.io/collector/exporter v0.74.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rc8
-	go.uber.org/multierr v1.10.0
+	go.uber.org/multierr v1.11.0
 )
 
 require (
