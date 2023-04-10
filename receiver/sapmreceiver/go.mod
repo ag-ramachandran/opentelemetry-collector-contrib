@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/jaegertracing/jaeger v1.41.0
+	github.com/jaegertracing/jaeger v1.44.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.74.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/splunk v0.74.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.74.0
@@ -57,7 +57,7 @@ require (
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
-	google.golang.org/grpc v1.53.0 // indirect
+	google.golang.org/grpc v1.54.0 // indirect
 	google.golang.org/protobuf v1.29.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
