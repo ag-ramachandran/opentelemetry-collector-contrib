@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/apache/thrift v0.18.1
 	github.com/gorilla/mux v1.8.0
-	github.com/jaegertracing/jaeger v1.41.0
+	github.com/jaegertracing/jaeger v1.44.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.74.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.74.0
 	github.com/stretchr/testify v1.8.2
@@ -17,7 +17,7 @@ require (
 	go.opentelemetry.io/collector/receiver v0.74.0
 	go.opentelemetry.io/collector/semconv v0.74.0
 	go.uber.org/multierr v1.10.0
-	google.golang.org/grpc v1.53.0
+	google.golang.org/grpc v1.54.0
 )
 
 require (
