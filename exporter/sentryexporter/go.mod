@@ -11,7 +11,7 @@ require (
 	go.opentelemetry.io/collector/confmap v0.74.0
 	go.opentelemetry.io/collector/exporter v0.74.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rc8
-	go.opentelemetry.io/collector/semconv v0.74.0
+	go.opentelemetry.io/collector/semconv v0.78.0
 )
 
 require (
@@ -28,7 +28,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/collector v0.74.0 // indirect
 	go.opentelemetry.io/collector/consumer v0.74.0 // indirect
