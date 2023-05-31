@@ -47,8 +47,8 @@ github.com/Azure/go-autorest/logger v0.2.0/go.mod h1:T9E3cAhj2VqvPOtCYAvby9aBXkZ
 github.com/Azure/go-autorest/tracing v0.6.0/go.mod h1:+vhtPC754Xsa23ID7GlGsrdKBpUA79WCAKPPZVC2DeU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/DataDog/agent-payload/v5 v5.0.84 h1:6m5ylcrhKfvvZ7zxvjWZ/ncCV3ZasehNNdsqJKhEQXE=
-github.com/DataDog/agent-payload/v5 v5.0.84/go.mod h1:oQZi1VZp1e3QvlSUX4iphZCpJaFepUxWq0hNXxihKBM=
+github.com/DataDog/agent-payload/v5 v5.0.85 h1:kmcBpkNwbfKCP3fBENZ6uvahvheTMgwjVjONKajVbI8=
+github.com/DataDog/agent-payload/v5 v5.0.85/go.mod h1:oQZi1VZp1e3QvlSUX4iphZCpJaFepUxWq0hNXxihKBM=
 github.com/DataDog/datadog-agent/pkg/obfuscate v0.46.0-rc.1 h1:acfr45fVXOCFNpCgI8xHnlys4evMRqjUvkbm8WdFTgc=
 github.com/DataDog/datadog-agent/pkg/obfuscate v0.46.0-rc.1/go.mod h1:e933RWa4kAWuHi5jpzEuOiULlv21HcCFEVIYegmaB5c=
 github.com/DataDog/datadog-agent/pkg/proto v0.46.0-rc.1 h1:iYQbgDOIC9MBM3zuGRqGV62S1+DbnlY2HtS2FuNopvY=
