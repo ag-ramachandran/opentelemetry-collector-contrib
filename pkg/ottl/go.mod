@@ -9,7 +9,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/json-iterator/go v1.1.12
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.78.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector/component v0.78.3-0.20230525165144-87dd85a6c034
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230525165144-87dd85a6c034
 	go.opentelemetry.io/otel/trace v1.16.0
