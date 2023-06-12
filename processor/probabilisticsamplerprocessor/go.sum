@@ -379,8 +379,8 @@ github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
-github.com/stretchr/testify v1.8.3 h1:RP3t2pwF7cMEbC1dqtB6poj3niw/9gnV4Cjg5oW5gtY=
-github.com/stretchr/testify v1.8.3/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
+github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/stvp/go-udp-testing v0.0.0-20201019212854-469649b16807/go.mod h1:7jxmlfBCDBXRzr0eAQJ48XC1hBu1np4CS5+cHEYfwpc=
 github.com/tklauser/go-sysconf v0.3.11 h1:89WgdJhk5SNwJfu+GKyYveZ4IaJ7xAkecBo+KdJV0CM=
 github.com/tklauser/go-sysconf v0.3.11/go.mod h1:GqXfhXY3kiPa0nAXPDIQIWzJbMCB7AmcWpGR8lSZfqI=
@@ -421,8 +421,8 @@ go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230525165144-87dd85a6c034
 go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230525165144-87dd85a6c034/go.mod h1:rEAKFqc1L03lidKtra/2/dJtI0Hp+JsQxuPEIkj/2Vg=
 go.opentelemetry.io/collector/receiver v0.78.3-0.20230525165144-87dd85a6c034 h1:j6ULyliqn6SqAg0VJ+dA/f195vMWDYZqYCPvuBAfuQY=
 go.opentelemetry.io/collector/receiver v0.78.3-0.20230525165144-87dd85a6c034/go.mod h1:zSJ4Y46xti5ZelVWFGwyAeSxDMepuwKS/3c2njMMS8A=
-go.opentelemetry.io/collector/semconv v0.78.3-0.20230525165144-87dd85a6c034 h1:LNX/lzH8eoWTwV48nvCPuun00fpr9sOGET+/QdMM7jk=
-go.opentelemetry.io/collector/semconv v0.78.3-0.20230525165144-87dd85a6c034/go.mod h1:lazBA42nqZPNPWDMiqWfr5eIVeNgRmoLDbQmjXKcm70=
+go.opentelemetry.io/collector/semconv v0.79.0 h1:74pzP4c7xWk9Eihs14kEQvE4m4hHgXrQ/YbWkdn1bVY=
+go.opentelemetry.io/collector/semconv v0.79.0/go.mod h1:TlYPtzvsXyHOgr5eATi43qEMqwSmIziivJB2uctKswo=
 go.opentelemetry.io/contrib/propagators/b3 v1.16.1 h1:Y9Dk1kR93eSHadRTkqnm+QyQVhHthCcvTkoP/Afh7+4=
 go.opentelemetry.io/contrib/propagators/b3 v1.16.1/go.mod h1:IR0G6txqoetQrjjdoDGe+udhFegxnQQd0dOJfFS8Jg0=
 go.opentelemetry.io/contrib/zpages v0.41.1 h1:FReY8OWFNtYm4mWleTRxTUyD3r02uGcwS6ZeElahs00=
