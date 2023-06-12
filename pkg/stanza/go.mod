@@ -13,10 +13,10 @@ require (
 	github.com/observiq/nanojack v0.0.0-20201106172433-343928847ebc
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage v0.78.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.78.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector v0.78.3-0.20230525165144-87dd85a6c034
 	go.opentelemetry.io/collector/component v0.78.3-0.20230525165144-87dd85a6c034
-	go.opentelemetry.io/collector/confmap v0.78.3-0.20230525165144-87dd85a6c034
+	go.opentelemetry.io/collector/confmap v0.79.0
 	go.opentelemetry.io/collector/consumer v0.78.3-0.20230525165144-87dd85a6c034
 	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0012.0.20230525165144-87dd85a6c034
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230525165144-87dd85a6c034
