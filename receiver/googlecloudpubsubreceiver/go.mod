@@ -4,14 +4,14 @@ go 1.19
 
 require (
 	cloud.google.com/go/pubsub v1.31.0
-	github.com/stretchr/testify v1.8.3
-	go.opentelemetry.io/collector v0.78.3-0.20230525165144-87dd85a6c034
-	go.opentelemetry.io/collector/component v0.78.3-0.20230525165144-87dd85a6c034
-	go.opentelemetry.io/collector/confmap v0.78.3-0.20230525165144-87dd85a6c034
-	go.opentelemetry.io/collector/consumer v0.78.3-0.20230525165144-87dd85a6c034
-	go.opentelemetry.io/collector/exporter v0.78.3-0.20230525165144-87dd85a6c034
+	github.com/stretchr/testify v1.8.4
+	go.opentelemetry.io/collector v0.79.0
+	go.opentelemetry.io/collector/component v0.79.0
+	go.opentelemetry.io/collector/confmap v0.79.0
+	go.opentelemetry.io/collector/consumer v0.79.0
+	go.opentelemetry.io/collector/exporter v0.79.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230525165144-87dd85a6c034
-	go.opentelemetry.io/collector/receiver v0.78.3-0.20230525165144-87dd85a6c034
+	go.opentelemetry.io/collector/receiver v0.79.0
 	go.uber.org/zap v1.24.0
 	google.golang.org/api v0.124.0
 	google.golang.org/grpc v1.55.0
