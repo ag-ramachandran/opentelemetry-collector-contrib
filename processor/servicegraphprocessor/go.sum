@@ -392,8 +392,8 @@ github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
-github.com/stretchr/testify v1.8.3 h1:RP3t2pwF7cMEbC1dqtB6poj3niw/9gnV4Cjg5oW5gtY=
-github.com/stretchr/testify v1.8.3/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
+github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/stvp/go-udp-testing v0.0.0-20201019212854-469649b16807/go.mod h1:7jxmlfBCDBXRzr0eAQJ48XC1hBu1np4CS5+cHEYfwpc=
 github.com/tklauser/go-sysconf v0.3.11 h1:89WgdJhk5SNwJfu+GKyYveZ4IaJ7xAkecBo+KdJV0CM=
 github.com/tklauser/go-sysconf v0.3.11/go.mod h1:GqXfhXY3kiPa0nAXPDIQIWzJbMCB7AmcWpGR8lSZfqI=
@@ -430,8 +430,8 @@ go.opentelemetry.io/collector/exporter v0.78.3-0.20230525165144-87dd85a6c034/go.
 go.opentelemetry.io/collector/exporter/otlpexporter v0.78.3-0.20230525165144-87dd85a6c034 h1:V9qzXMYYOliHdCDZhZxG5+djnIQmXGDM95qSh3sShlA=
 go.opentelemetry.io/collector/exporter/otlpexporter v0.78.3-0.20230525165144-87dd85a6c034/go.mod h1:25l0DBkwJTZSE4DBSnvnzwOT8ChBzz4SETXRUjxOqYc=
 go.opentelemetry.io/collector/extension/zpagesextension v0.78.2 h1:h1ANMncTIrKhKM0zbdMhHRlZsTfY7qrhwZeHnjI4Du0=
-go.opentelemetry.io/collector/featuregate v1.0.0-rcv0012.0.20230525165144-87dd85a6c034 h1:DWwGIvimhygvFih+yYQwaR4TV4yHD2RCTPDRhFQCv7w=
-go.opentelemetry.io/collector/featuregate v1.0.0-rcv0012.0.20230525165144-87dd85a6c034/go.mod h1:/kVAsGUCyJXIDSgHftCN63QiwAEVHRLX2Kh/S+dqgHY=
+go.opentelemetry.io/collector/featuregate v1.0.0-rcv0013 h1:tiTUG9X/gEDN1oDYQOBVUFYQfhUG2CvgW9VhBc2uk1U=
+go.opentelemetry.io/collector/featuregate v1.0.0-rcv0013/go.mod h1:0mE3mDLmUrOXVoNsuvj+7dV14h/9HFl/Fy9YTLoLObo=
 go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230525165144-87dd85a6c034 h1:nURnFEE9rRWA7Za7wcxQifrJ9QH/eaEyUDJFRWlfCyk=
 go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230525165144-87dd85a6c034/go.mod h1:rEAKFqc1L03lidKtra/2/dJtI0Hp+JsQxuPEIkj/2Vg=
 go.opentelemetry.io/collector/receiver v0.78.3-0.20230525165144-87dd85a6c034 h1:j6ULyliqn6SqAg0VJ+dA/f195vMWDYZqYCPvuBAfuQY=
