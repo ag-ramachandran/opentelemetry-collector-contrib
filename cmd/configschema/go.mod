@@ -9,11 +9,11 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver v0.81.0
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector v0.81.0
-	go.opentelemetry.io/collector/component v0.81.0
+	go.opentelemetry.io/collector/component v0.83.0
 	go.opentelemetry.io/collector/config/configtls v0.81.0
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.81.0
 	golang.org/x/mod v0.12.0
-	golang.org/x/text v0.11.0
+	golang.org/x/text v0.12.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -614,9 +614,9 @@ require (
 	go.opentelemetry.io/collector/config/confighttp v0.81.0 // indirect
 	go.opentelemetry.io/collector/config/confignet v0.81.0 // indirect
 	go.opentelemetry.io/collector/config/configopaque v0.81.0 // indirect
-	go.opentelemetry.io/collector/config/configtelemetry v0.81.0 // indirect
+	go.opentelemetry.io/collector/config/configtelemetry v0.83.0 // indirect
 	go.opentelemetry.io/collector/config/internal v0.81.0 // indirect
-	go.opentelemetry.io/collector/confmap v0.81.0 // indirect
+	go.opentelemetry.io/collector/confmap v0.83.0 // indirect
 	go.opentelemetry.io/collector/connector v0.81.0 // indirect
 	go.opentelemetry.io/collector/consumer v0.81.0 // indirect
 	go.opentelemetry.io/collector/exporter/loggingexporter v0.81.0 // indirect
@@ -626,8 +626,8 @@ require (
 	go.opentelemetry.io/collector/extension/auth v0.81.0 // indirect
 	go.opentelemetry.io/collector/extension/ballastextension v0.81.0 // indirect
 	go.opentelemetry.io/collector/extension/zpagesextension v0.81.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0013 // indirect
-	go.opentelemetry.io/collector/pdata v1.0.0-rcv0013 // indirect
+	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0014 // indirect
+	go.opentelemetry.io/collector/pdata v1.0.0-rcv0014 // indirect
 	go.opentelemetry.io/collector/processor v0.81.0 // indirect
 	go.opentelemetry.io/collector/processor/batchprocessor v0.81.0 // indirect
 	go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.81.0 // indirect
@@ -646,14 +646,14 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/goleak v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.11.0 // indirect
+	go.uber.org/zap v1.25.0 // indirect
+	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
-	golang.org/x/net v0.12.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/oauth2 v0.10.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/term v0.10.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/term v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.11.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
@@ -663,7 +663,7 @@ require (
 	google.golang.org/genproto v0.0.0-20230629202037-9506855d4529 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230706204954-ccb25ca9f130 // indirect
-	google.golang.org/grpc v1.56.2 // indirect
+	google.golang.org/grpc v1.57.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
