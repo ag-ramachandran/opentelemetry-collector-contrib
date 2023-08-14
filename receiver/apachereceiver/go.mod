@@ -10,7 +10,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.21.0
 	go.opentelemetry.io/collector/component v0.81.0
 	go.opentelemetry.io/collector/config/confighttp v0.81.0
-	go.opentelemetry.io/collector/config/configtls v0.81.0
+	go.opentelemetry.io/collector/config/configtls v0.83.0
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/consumer v0.81.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0013
@@ -65,7 +65,7 @@ require (
 	go.opentelemetry.io/collector v0.81.0 // indirect
 	go.opentelemetry.io/collector/config/configauth v0.81.0 // indirect
 	go.opentelemetry.io/collector/config/configcompression v0.81.0 // indirect
-	go.opentelemetry.io/collector/config/configopaque v0.81.0 // indirect
+	go.opentelemetry.io/collector/config/configopaque v0.83.0 // indirect
 	go.opentelemetry.io/collector/config/configtelemetry v0.81.0 // indirect
 	go.opentelemetry.io/collector/config/internal v0.81.0 // indirect
 	go.opentelemetry.io/collector/exporter v0.81.0 // indirect
@@ -82,7 +82,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea // indirect
 	golang.org/x/net v0.12.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	google.golang.org/grpc v1.56.2 // indirect
