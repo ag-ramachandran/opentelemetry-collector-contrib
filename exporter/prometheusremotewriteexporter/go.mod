@@ -16,8 +16,8 @@ require (
 	github.com/tidwall/wal v1.1.7
 	go.opentelemetry.io/collector/component v0.81.0
 	go.opentelemetry.io/collector/config/confighttp v0.81.0
-	go.opentelemetry.io/collector/config/configopaque v0.81.0
-	go.opentelemetry.io/collector/config/configtls v0.81.0
+	go.opentelemetry.io/collector/config/configopaque v0.84.0
+	go.opentelemetry.io/collector/config/configtls v0.84.0
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/consumer v0.81.0
 	go.opentelemetry.io/collector/exporter v0.81.0
@@ -66,7 +66,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	google.golang.org/grpc v1.56.2 // indirect
