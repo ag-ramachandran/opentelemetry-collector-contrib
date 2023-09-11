@@ -14,7 +14,7 @@ require (
 	go.opentelemetry.io/collector/receiver v0.84.0
 	go.uber.org/zap v1.25.0
 	google.golang.org/api v0.138.0
-	google.golang.org/grpc v1.57.0
+	google.golang.org/grpc v1.58.0
 )
 
 require (
