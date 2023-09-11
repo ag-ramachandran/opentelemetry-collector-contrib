@@ -12,7 +12,7 @@ require (
 	go.opentelemetry.io/collector/component v0.84.0
 	go.opentelemetry.io/collector/config/configopaque v0.84.0
 	go.opentelemetry.io/collector/config/configtls v0.84.0
-	go.opentelemetry.io/collector/confmap v0.84.0
+	go.opentelemetry.io/collector/confmap v0.85.0
 	go.opentelemetry.io/collector/exporter v0.84.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0014
 	go.opentelemetry.io/collector/semconv v0.84.0
