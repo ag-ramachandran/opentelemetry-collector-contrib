@@ -8,7 +8,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector/component v0.84.0
 	go.opentelemetry.io/collector/config/configopaque v0.84.0
-	go.opentelemetry.io/collector/confmap v0.84.0
+	go.opentelemetry.io/collector/confmap v0.85.0
 	go.opentelemetry.io/collector/extension v0.84.0
 	go.opentelemetry.io/collector/extension/auth v0.84.0
 	go.uber.org/multierr v1.11.0
