@@ -6,7 +6,7 @@ require (
 	github.com/Showmax/go-fqdn v1.0.0
 	github.com/aws/aws-sdk-go v1.45.2
 	github.com/docker/docker v24.0.5+incompatible
-	github.com/hashicorp/consul/api v1.24.0
+	github.com/hashicorp/consul/api v1.25.0
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector/semconv v0.85.0
 	go.opentelemetry.io/otel v1.17.0
