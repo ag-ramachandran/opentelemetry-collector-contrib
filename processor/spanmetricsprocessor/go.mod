@@ -19,7 +19,7 @@ require (
 	go.opentelemetry.io/collector/processor v0.85.1-0.20230921012510-68dd7d763b59
 	go.opentelemetry.io/collector/semconv v0.85.1-0.20230921012510-68dd7d763b59
 	go.uber.org/zap v1.26.0
-	google.golang.org/grpc v1.58.1
+	google.golang.org/grpc v1.58.2
 )
 
 require (
