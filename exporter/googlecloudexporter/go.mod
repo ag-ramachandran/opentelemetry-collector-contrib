@@ -3,7 +3,7 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/google
 go 1.20
 
 require (
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/collector v0.43.1
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/collector v0.44.0
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector/component v0.86.0
 	go.opentelemetry.io/collector/confmap v0.86.0
@@ -19,8 +19,8 @@ require (
 	cloud.google.com/go/longrunning v0.5.1 // indirect
 	cloud.google.com/go/monitoring v1.15.1 // indirect
 	cloud.google.com/go/trace v1.10.1 // indirect
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.19.1 // indirect
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.43.1 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.20.0 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.44.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -54,11 +54,11 @@ require (
 	go.opentelemetry.io/collector/extension v0.86.0 // indirect
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015 // indirect
 	go.opentelemetry.io/collector/semconv v0.86.0 // indirect
-	go.opentelemetry.io/otel v1.18.0 // indirect
-	go.opentelemetry.io/otel/metric v1.18.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.18.0 // indirect
+	go.opentelemetry.io/otel v1.19.0 // indirect
+	go.opentelemetry.io/otel/metric v1.19.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.19.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v0.41.0 // indirect
-	go.opentelemetry.io/otel/trace v1.18.0 // indirect
+	go.opentelemetry.io/otel/trace v1.19.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
