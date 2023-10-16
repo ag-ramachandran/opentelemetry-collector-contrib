@@ -11,8 +11,8 @@ require (
 	go.opentelemetry.io/collector/component v0.86.0
 	go.opentelemetry.io/collector/config/confignet v0.86.0
 	go.opentelemetry.io/collector/confmap v0.86.0
-	go.opentelemetry.io/collector/consumer v0.86.0
-	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
+	go.opentelemetry.io/collector/consumer v0.87.0
+	go.opentelemetry.io/collector/pdata v1.0.0-rcv0016
 	go.opentelemetry.io/collector/receiver v0.86.0
 	go.uber.org/zap v1.26.0
 )
