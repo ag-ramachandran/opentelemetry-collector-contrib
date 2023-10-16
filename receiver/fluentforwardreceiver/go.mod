@@ -8,7 +8,7 @@ require (
 	github.com/tinylib/msgp v1.1.8
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/collector/component v0.86.0
-	go.opentelemetry.io/collector/confmap v0.86.0
+	go.opentelemetry.io/collector/confmap v0.87.0
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
 	go.opentelemetry.io/collector/receiver v0.86.0
@@ -35,7 +35,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	go.opentelemetry.io/collector v0.86.0 // indirect
 	go.opentelemetry.io/collector/config/configtelemetry v0.86.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0015 // indirect
+	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0016 // indirect
 	go.opentelemetry.io/otel v1.18.0 // indirect
 	go.opentelemetry.io/otel/metric v1.18.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.18.0 // indirect
