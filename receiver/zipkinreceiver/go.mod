@@ -12,7 +12,7 @@ require (
 	go.opentelemetry.io/collector/config/confighttp v0.86.0
 	go.opentelemetry.io/collector/confmap v0.86.0
 	go.opentelemetry.io/collector/consumer v0.86.0
-	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
+	go.opentelemetry.io/collector/pdata v1.0.0-rcv0016
 	go.opentelemetry.io/collector/receiver v0.86.0
 	go.opentelemetry.io/collector/semconv v0.86.0
 	google.golang.org/protobuf v1.31.0
