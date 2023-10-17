@@ -16,7 +16,7 @@ require (
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/exporter v0.86.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
-	go.opentelemetry.io/collector/semconv v0.86.0
+	go.opentelemetry.io/collector/semconv v0.87.0
 	go.uber.org/zap v1.26.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98
 	google.golang.org/protobuf v1.31.0
