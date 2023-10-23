@@ -12,7 +12,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/yusufpapurcu/wmi v1.2.3
 	go.opentelemetry.io/collector/component v0.86.0
-	go.opentelemetry.io/collector/confmap v0.86.0
+	go.opentelemetry.io/collector/confmap v0.88.0
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/otelcol v0.86.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
@@ -91,7 +91,7 @@ require (
 	go.opentelemetry.io/collector/connector v0.86.0 // indirect
 	go.opentelemetry.io/collector/exporter v0.86.0 // indirect
 	go.opentelemetry.io/collector/extension v0.86.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0015 // indirect
+	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0017 // indirect
 	go.opentelemetry.io/collector/processor v0.86.0 // indirect
 	go.opentelemetry.io/collector/service v0.86.0 // indirect
 	go.opentelemetry.io/contrib/propagators/b3 v1.19.0 // indirect
