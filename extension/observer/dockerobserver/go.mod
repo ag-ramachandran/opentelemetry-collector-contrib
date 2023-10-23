@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/testcontainers/testcontainers-go v0.23.0
 	go.opentelemetry.io/collector/component v0.86.0
-	go.opentelemetry.io/collector/confmap v0.86.0
+	go.opentelemetry.io/collector/confmap v0.88.0
 	go.opentelemetry.io/collector/extension v0.86.0
 	go.uber.org/zap v1.26.0
 )
@@ -48,7 +48,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	go.opentelemetry.io/collector/config/configtelemetry v0.86.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0015 // indirect
+	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0017 // indirect
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015 // indirect
 	go.opentelemetry.io/otel v1.18.0 // indirect
 	go.opentelemetry.io/otel/metric v1.18.0 // indirect
