@@ -13,7 +13,7 @@ require (
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/collector/component v0.86.0
 	go.opentelemetry.io/collector/config/confighttp v0.86.0
-	go.opentelemetry.io/collector/config/configopaque v0.86.0
+	go.opentelemetry.io/collector/config/configopaque v0.88.0
 	go.opentelemetry.io/collector/config/configtls v0.86.0
 	go.opentelemetry.io/collector/confmap v0.86.0
 	go.opentelemetry.io/collector/consumer v0.86.0
