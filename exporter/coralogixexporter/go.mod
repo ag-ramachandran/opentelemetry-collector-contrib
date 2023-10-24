@@ -14,8 +14,8 @@ require (
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/exporter v0.86.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98
-	google.golang.org/grpc v1.58.2
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d
+	google.golang.org/grpc v1.59.0
 )
 
 require (
