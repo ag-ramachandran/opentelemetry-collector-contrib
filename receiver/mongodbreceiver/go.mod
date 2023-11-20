@@ -12,8 +12,8 @@ require (
 	go.mongodb.org/mongo-driver v1.12.1
 	go.opentelemetry.io/collector/component v0.86.0
 	go.opentelemetry.io/collector/config/confignet v0.86.0
-	go.opentelemetry.io/collector/config/configopaque v0.86.0
-	go.opentelemetry.io/collector/config/configtls v0.86.0
+	go.opentelemetry.io/collector/config/configopaque v0.89.0
+	go.opentelemetry.io/collector/config/configtls v0.89.0
 	go.opentelemetry.io/collector/confmap v0.86.0
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
@@ -35,7 +35,7 @@ require (
 	github.com/docker/docker v24.0.6+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -83,7 +83,7 @@ require (
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98 // indirect
