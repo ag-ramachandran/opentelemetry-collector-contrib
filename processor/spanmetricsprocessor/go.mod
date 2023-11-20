@@ -14,7 +14,7 @@ require (
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/exporter v0.86.0
 	go.opentelemetry.io/collector/exporter/otlpexporter v0.86.0
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0015
+	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0018
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
 	go.opentelemetry.io/collector/processor v0.86.0
 	go.opentelemetry.io/collector/semconv v0.86.0
@@ -31,6 +31,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
