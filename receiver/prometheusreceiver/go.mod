@@ -17,7 +17,7 @@ require (
 	go.opentelemetry.io/collector/confmap v0.86.0
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/exporter v0.86.0
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0015
+	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0018
 	go.opentelemetry.io/collector/otelcol v0.86.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
 	go.opentelemetry.io/collector/processor v0.86.0
@@ -101,6 +101,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.4 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
+	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
 	github.com/hashicorp/nomad/api v0.0.0-20230718173136-3a687930bd3e // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
