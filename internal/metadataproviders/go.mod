@@ -10,7 +10,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.86.0
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector/semconv v0.86.0
-	go.opentelemetry.io/otel v1.18.0
+	go.opentelemetry.io/otel v1.21.0
 	go.opentelemetry.io/otel/sdk v1.18.0
 	k8s.io/api v0.28.2
 	k8s.io/apimachinery v0.28.2
@@ -27,7 +27,7 @@ require (
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/fatih/color v1.14.1 // indirect
-	github.com/go-logr/logr v1.2.4 // indirect
+	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
@@ -35,7 +35,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -66,8 +66,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	go.opentelemetry.io/otel/metric v1.18.0 // indirect
-	go.opentelemetry.io/otel/trace v1.18.0 // indirect
+	go.opentelemetry.io/otel/metric v1.21.0 // indirect
+	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/oauth2 v0.12.0 // indirect
