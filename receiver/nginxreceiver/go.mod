@@ -12,9 +12,9 @@ require (
 	go.opentelemetry.io/collector/component v0.86.0
 	go.opentelemetry.io/collector/config/confighttp v0.86.0
 	go.opentelemetry.io/collector/config/configtls v0.86.0
-	go.opentelemetry.io/collector/confmap v0.86.0
+	go.opentelemetry.io/collector/confmap v0.90.1
 	go.opentelemetry.io/collector/consumer v0.86.0
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0015
+	go.opentelemetry.io/collector/featuregate v1.0.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
 	go.opentelemetry.io/collector/receiver v0.86.0
 	go.uber.org/zap v1.26.0
@@ -41,6 +41,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.1 // indirect
+	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
