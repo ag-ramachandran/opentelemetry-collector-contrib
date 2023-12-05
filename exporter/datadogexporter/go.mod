@@ -31,10 +31,10 @@ require (
 	go.opentelemetry.io/collector/component v0.86.0
 	go.opentelemetry.io/collector/config/confignet v0.86.0
 	go.opentelemetry.io/collector/config/configopaque v0.86.0
-	go.opentelemetry.io/collector/confmap v0.86.0
+	go.opentelemetry.io/collector/confmap v0.90.1
 	go.opentelemetry.io/collector/consumer v0.86.0
 	go.opentelemetry.io/collector/exporter v0.86.0
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0015
+	go.opentelemetry.io/collector/featuregate v1.0.0
 	go.opentelemetry.io/collector/otelcol v0.86.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0015
 	go.opentelemetry.io/collector/processor v0.86.0
@@ -113,6 +113,7 @@ require (
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
+	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/imdario/mergo v0.3.15 // indirect
