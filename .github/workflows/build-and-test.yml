@@ -270,7 +270,7 @@ jobs:
       - name: Run Unit Tests With Coverage
         if: startsWith( matrix.go-version, '~1.20' ) # only run coverage on one version
         run: make gotest-with-cover GROUP=${{ matrix.group }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: startsWith( matrix.go-version, '~1.20' ) # only run coverage on one version
         with:
           name: coverage-artifacts
@@ -452,7 +452,7 @@ jobs:
       - name: Build Collector ${{ matrix.binary }}
         run: make GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} GOARM=${{ matrix.arm }} otelcontribcol
       - name: Upload Collector Binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: collector-binaries
           path: ./bin/*
@@ -500,7 +500,7 @@ jobs:
               ./internal/buildscripts/packaging/fpm/test.sh dist/otel-contrib-collector*x86_64.rpm examples/demo/otel-collector-config.yaml
           fi
       - name: Upload Packages
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: collector-packages
           path: ./dist/*
@@ -535,7 +535,7 @@ jobs:
       - name: Validate MSI
         run: .\internal\buildscripts\packaging\msi\make.ps1 Confirm-MSI
       - name: Upload MSI
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: collector-packages
           path: ./dist/*.msi
