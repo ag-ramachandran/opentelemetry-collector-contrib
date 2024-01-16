@@ -970,8 +970,8 @@ go.opentelemetry.io/collector/component v0.86.0 h1:3+6OTiknu081jWYSUx4PdOecvmo0k
 go.opentelemetry.io/collector/component v0.86.0/go.mod h1:XaBL2y1EhcmbCIFqAqk5r3xOZyi1SarwU7Wj/iTiDOA=
 go.opentelemetry.io/collector/config/configauth v0.86.0 h1:cqfr/zXyGGg5TGgmS+Ws6XFy6DdBNJxkTLUWpOVzmVI=
 go.opentelemetry.io/collector/config/configauth v0.86.0/go.mod h1:8/v2oLZe9kskODghcRQSp2xP56EySlU1aNRthEIwn8w=
-go.opentelemetry.io/collector/config/configcompression v0.86.0 h1:qA7i0igeYEpOW4PcGk3tYYSAO5dn+aMuDbCc/D0Rli4=
-go.opentelemetry.io/collector/config/configcompression v0.86.0/go.mod h1:LaavoxZsro5lL7qh1g9DMifG0qixWPEecW18Qr8bpag=
+go.opentelemetry.io/collector/config/configcompression v0.92.0 h1:LtHx4ZkW3BMxa4CfQGMOE7+ZhXvd4W10Pxa91Hr8IL0=
+go.opentelemetry.io/collector/config/configcompression v0.92.0/go.mod h1:fA36AZC/Qcyl+HvMnvFZuV/iUWGQJrchimmk+qYWuMM=
 go.opentelemetry.io/collector/config/configgrpc v0.86.0 h1:M1fq3QAGy+Q8bheiT1YWUpCcVEBnhWttHU1l8oXBQWg=
 go.opentelemetry.io/collector/config/configgrpc v0.86.0/go.mod h1:PR4Ydn5RylPs06TEQRx6ygBdcOPYR9pni7XKoat8EYM=
 go.opentelemetry.io/collector/config/confignet v0.86.0 h1:jg8rsMsAGKa+x3gs1yxqnfr2jpSAu8mGn7hc4y8h71o=
@@ -1017,7 +1017,7 @@ go.opentelemetry.io/proto/otlp v0.7.0/go.mod h1:PqfVotwruBrMGOCsRd/89rSnXhoiJIqe
 go.opentelemetry.io/proto/otlp v0.15.0/go.mod h1:H7XAot3MsfNsj7EXtrA2q5xSNQ10UqI405h3+duxN4U=
 go.opentelemetry.io/proto/otlp v0.19.0/go.mod h1:H7XAot3MsfNsj7EXtrA2q5xSNQ10UqI405h3+duxN4U=
 go.uber.org/atomic v1.7.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
-go.uber.org/goleak v1.2.1 h1:NBol2c7O1ZokfZ0LEU9K6Whx/KnwvepVetCUhtKja4A=
+go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/multierr v1.6.0/go.mod h1:cdWPpRnG4AhwMwsgIHip0KRBQjJy5kYEpYjJxpXp9iU=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
 go.uber.org/multierr v1.11.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
