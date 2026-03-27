@@ -30,9 +30,11 @@ type Config struct {
 	MetricTable               string              `mapstructure:"metrics_table_name"`
 	LogTable                  string              `mapstructure:"logs_table_name"`
 	TraceTable                string              `mapstructure:"traces_table_name"`
+	ProfileTable              string              `mapstructure:"profiles_table_name"`
 	MetricTableMapping        string              `mapstructure:"metrics_table_json_mapping"`
 	LogTableMapping           string              `mapstructure:"logs_table_json_mapping"`
 	TraceTableMapping         string              `mapstructure:"traces_table_json_mapping"`
+	ProfileTableMapping       string              `mapstructure:"profiles_table_json_mapping"`
 	IngestionType             string              `mapstructure:"ingestion_type"`
 }
 

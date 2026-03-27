@@ -5,6 +5,7 @@ status:
   class: exporter
   stability:
     beta: [traces, metrics, logs]
+    alpha: [profiles]
   distributions: [contrib]
   codeowners:
     active: [ag-ramachandran]

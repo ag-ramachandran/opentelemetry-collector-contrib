@@ -21,6 +21,10 @@ properties:
     type: string
   metrics_table_name:
     type: string
+  profiles_table_json_mapping:
+    type: string
+  profiles_table_name:
+    type: string
   sending_queue:
     x-optional: true
     $ref: go.opentelemetry.io/collector/exporter/exporterhelper.queue_batch_config

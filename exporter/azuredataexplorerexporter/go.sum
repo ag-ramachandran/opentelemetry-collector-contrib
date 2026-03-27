@@ -119,6 +119,8 @@ go.opentelemetry.io/collector/consumer v1.55.0 h1:7Per8P4J0nlBrFVSXb+nwZ+egiel1B
 go.opentelemetry.io/collector/consumer v1.55.0/go.mod h1:Qrn5fDp/HpDmUp+l2RGKsdKyOPlgGlaZPKvw/z9FfEc=
 go.opentelemetry.io/collector/consumer/consumererror v0.149.0 h1:lXJv8UySfvnISJnCbkxf9ghYRQoWcXC78PxGurdnhKY=
 go.opentelemetry.io/collector/consumer/consumererror v0.149.0/go.mod h1:8mZKwHejnZpD0+hjg6T2ZYPzs/Ib8512DMFnx4yaknY=
+go.opentelemetry.io/collector/consumer/consumererror/xconsumererror v0.149.0 h1:igOwSP5ytu2WKKl8pSzzQPWt97IY/MWA2pZ6TRlLhv8=
+go.opentelemetry.io/collector/consumer/consumererror/xconsumererror v0.149.0/go.mod h1:2Ni6IZUmiqXMP8z25ka2TjedglJgXZOTkgUUmn2pzD4=
 go.opentelemetry.io/collector/consumer/consumertest v0.149.0 h1:IxOkDInfuUM8mT+rMNGtdUuuDlV9X2VS4WAQ/dZSYqg=
 go.opentelemetry.io/collector/consumer/consumertest v0.149.0/go.mod h1:ZMvFzch5IRjYBvj6WPc30HRy19smS0WFBXaOu16Wac0=
 go.opentelemetry.io/collector/consumer/xconsumer v0.149.0 h1:2z0wRTDsWqPdcC8xp9HJIAJej+07g4/yJrS0xkJJ4hA=
@@ -127,6 +129,8 @@ go.opentelemetry.io/collector/exporter v1.55.0 h1:1pExfXXKDPbwY4Be6cHd8LQOIpP7pt
 go.opentelemetry.io/collector/exporter v1.55.0/go.mod h1:Hp85myjvKjC+rLeMdVpatzYCglAv4V0MaFN8HXHfnaQ=
 go.opentelemetry.io/collector/exporter/exporterhelper v0.149.0 h1:y5eKO5aFBWYv/cSL2QnLxJ8k57STn9r+g1gdTVw9Z6Q=
 go.opentelemetry.io/collector/exporter/exporterhelper v0.149.0/go.mod h1:mR78r/JKfxu0x87YGplZsbYG6PBUyTr5bKgluc1qqNQ=
+go.opentelemetry.io/collector/exporter/exporterhelper/xexporterhelper v0.149.0 h1:oV8Yc9zgCEA2S13u0mqOdWYaPq/6VVg4dNgY7XW3p/A=
+go.opentelemetry.io/collector/exporter/exporterhelper/xexporterhelper v0.149.0/go.mod h1:nyLVBRGcwOOk9+uYpDA/+Gt3b3V7Mfu3HPvI8E2esk8=
 go.opentelemetry.io/collector/exporter/exportertest v0.149.0 h1:bmBvcffsXbDoWIEq2nSiY36+n0s2/Qd70ps5N5xObWA=
 go.opentelemetry.io/collector/exporter/exportertest v0.149.0/go.mod h1:4PrrXXNfTdkWxGT5fNiJ/70g8eRDLlQgh64UwhcjUzU=
 go.opentelemetry.io/collector/exporter/xexporter v0.149.0 h1:4uR3VnSxUVeV8igM7H3YkfKoQtndW8ZshWPjpGQIFUA=

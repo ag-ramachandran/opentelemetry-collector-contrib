@@ -16,6 +16,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/pprofile"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
 )
@@ -124,6 +125,26 @@ func (e *adxDataProducer) tracesDataPusher(_ context.Context, traceData ptrace.T
 	return nil
 }
 
+func (e *adxDataProducer) profilesDataPusher(_ context.Context, profilesData pprofile.Profiles) error {
+	transformedAdxProfiles := rawProfilesToAdxProfiles(profilesData)
+	profilesBuffer := make([]string, len(transformedAdxProfiles))
+	for idx, tp := range transformedAdxProfiles {
+		adxProfileJSONString, err := jsoniter.MarshalToString(tp)
+		if err != nil {
+			e.logger.Error("Error performing serialization of profile data.", zap.Error(err))
+		}
+		profilesBuffer[idx] = adxProfileJSONString
+	}
+	if len(profilesBuffer) != 0 {
+		if err := e.ingestData(profilesBuffer); err != nil {
+			return err
+		}
+	}
+	profilesFlushed := len(transformedAdxProfiles)
+	e.logger.Sugar().Infof("Flushing %d profile samples to sink", profilesFlushed)
+	return nil
+}
+
 func (e *adxDataProducer) Close(context.Context) error {
 	// Close the ingestor and client connections
 	err := e.ingestor.Close()
@@ -188,6 +209,10 @@ func getMappingRef(config *Config, telemetryDataType int) azkustoingest.FileOpti
 	case logsType:
 		if !isEmpty(config.LogTableMapping) {
 			return azkustoingest.IngestionMappingRef(config.LogTableMapping, azkustoingest.JSON)
+		}
+	case profilesType:
+		if !isEmpty(config.ProfileTableMapping) {
+			return azkustoingest.IngestionMappingRef(config.ProfileTableMapping, azkustoingest.JSON)
 		}
 	}
 	return nil
@@ -255,6 +280,8 @@ func getTableName(config *Config, telemetrydatatype int) (string, error) {
 		return config.LogTable, nil
 	case tracesType:
 		return config.TraceTable, nil
+	case profilesType:
+		return config.ProfileTable, nil
 	}
 	return "", errors.New("invalid telemetry datatype")
 }

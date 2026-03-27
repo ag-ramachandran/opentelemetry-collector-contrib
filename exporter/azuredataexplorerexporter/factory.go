@@ -10,6 +10,8 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter"
 	"go.opentelemetry.io/collector/exporter/exporterhelper"
+	"go.opentelemetry.io/collector/exporter/exporterhelper/xexporterhelper"
+	"go.opentelemetry.io/collector/exporter/xexporter"
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/azuredataexplorerexporter/internal/metadata"
@@ -17,25 +19,28 @@ import (
 
 const (
 	// The value of "type" key in configuration.
-	managedIngestType  = "managed"
-	queuedIngestTest   = "queued"
-	otelDb             = "oteldb"
-	defaultMetricTable = "OTELMetrics"
-	defaultLogTable    = "OTELLogs"
-	defaultTraceTable  = "OTELTraces"
-	metricsType        = 1
-	logsType           = 2
-	tracesType         = 3
+	managedIngestType   = "managed"
+	queuedIngestTest    = "queued"
+	otelDb              = "oteldb"
+	defaultMetricTable  = "OTELMetrics"
+	defaultLogTable     = "OTELLogs"
+	defaultTraceTable   = "OTELTraces"
+	defaultProfileTable = "OTELProfiles"
+	metricsType         = 1
+	logsType            = 2
+	tracesType          = 3
+	profilesType        = 4
 )
 
 // Creates a factory for the ADX Exporter
 func NewFactory() exporter.Factory {
-	return exporter.NewFactory(
+	return xexporter.NewFactory(
 		metadata.Type,
 		createDefaultConfig,
-		exporter.WithTraces(createTracesExporter, metadata.TracesStability),
-		exporter.WithMetrics(createMetricsExporter, metadata.MetricsStability),
-		exporter.WithLogs(createLogsExporter, metadata.LogsStability),
+		xexporter.WithTraces(createTracesExporter, metadata.TracesStability),
+		xexporter.WithMetrics(createMetricsExporter, metadata.MetricsStability),
+		xexporter.WithLogs(createLogsExporter, metadata.LogsStability),
+		xexporter.WithProfiles(createProfilesExporter, metadata.ProfilesStability),
 	)
 }
 
@@ -46,6 +51,7 @@ func createDefaultConfig() component.Config {
 		MetricTable:   defaultMetricTable,
 		LogTable:      defaultLogTable,
 		TraceTable:    defaultTraceTable,
+		ProfileTable:  defaultProfileTable,
 		IngestionType: queuedIngestTest,
 	}
 }
@@ -141,6 +147,35 @@ func createLogsExporter(
 		return nil, err
 	}
 	return exporter, nil
+}
+
+// createProfilesExporter creates a new exporter for profiles.
+func createProfilesExporter(
+	ctx context.Context,
+	set exporter.Settings,
+	cfg component.Config,
+) (xexporter.Profiles, error) {
+	adxCfg := cfg.(*Config)
+	setDefaultIngestionType(adxCfg, set.Logger)
+	version := set.BuildInfo.Version
+	adp, err := newExporter(adxCfg, set.Logger, profilesType, version)
+	if err != nil {
+		return nil, err
+	}
+
+	exp, err := xexporterhelper.NewProfiles(
+		ctx,
+		set,
+		adxCfg,
+		adp.profilesDataPusher,
+		exporterhelper.WithTimeout(adxCfg.TimeoutSettings),
+		exporterhelper.WithRetry(adxCfg.BackOffConfig),
+		exporterhelper.WithQueue(adxCfg.QueueSettings),
+		exporterhelper.WithShutdown(adp.Close))
+	if err != nil {
+		return nil, err
+	}
+	return exp, nil
 }
 
 func setDefaultIngestionType(config *Config, logger *zap.Logger) {

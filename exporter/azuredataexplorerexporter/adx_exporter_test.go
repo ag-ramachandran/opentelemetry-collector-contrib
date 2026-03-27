@@ -19,6 +19,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/pprofile"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap/zaptest"
 )
@@ -26,17 +27,19 @@ import (
 func TestNewExporter(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	c := Config{
-		ClusterURI:         "https://CLUSTER.kusto.windows.net",
-		ApplicationID:      "unknown",
-		ApplicationKey:     "unknown",
-		TenantID:           "unknown",
-		Database:           "not-configured",
-		MetricTable:        "OTELMetrics",
-		LogTable:           "OTELLogs",
-		TraceTable:         "OTELTraces",
-		MetricTableMapping: "otelmetrics_mapping",
-		LogTableMapping:    "otellogs_mapping",
-		TraceTableMapping:  "oteltraces_mapping",
+		ClusterURI:          "https://CLUSTER.kusto.windows.net",
+		ApplicationID:       "unknown",
+		ApplicationKey:      "unknown",
+		TenantID:            "unknown",
+		Database:            "not-configured",
+		MetricTable:         "OTELMetrics",
+		LogTable:            "OTELLogs",
+		TraceTable:          "OTELTraces",
+		ProfileTable:        "OTELProfiles",
+		MetricTableMapping:  "otelmetrics_mapping",
+		LogTableMapping:     "otellogs_mapping",
+		TraceTableMapping:   "oteltraces_mapping",
+		ProfileTableMapping: "otelprofiles_mapping",
 	}
 	mexp, err := newExporter(&c, logger, metricsType, component.NewDefaultBuildInfo().Version)
 	assert.NoError(t, err)
@@ -53,6 +56,11 @@ func TestNewExporter(t *testing.T) {
 	assert.NotNil(t, texp)
 	assert.NoError(t, texp.Close(t.Context()))
 
+	pexp, err := newExporter(&c, logger, profilesType, component.NewDefaultBuildInfo().Version)
+	assert.NoError(t, err)
+	assert.NotNil(t, pexp)
+	assert.NoError(t, pexp.Close(t.Context()))
+
 	fexp, err := newExporter(&c, logger, 5, component.NewDefaultBuildInfo().Version)
 	assert.Error(t, err)
 	assert.Nil(t, fexp)
@@ -60,17 +68,19 @@ func TestNewExporter(t *testing.T) {
 
 func getKcsb() *azkustodata.ConnectionStringBuilder {
 	return createKcsb(&Config{
-		ClusterURI:         "https://CLUSTER.kusto.windows.net",
-		ApplicationID:      "unknown",
-		ApplicationKey:     "unknown",
-		TenantID:           "unknown",
-		Database:           "not-configured",
-		MetricTable:        "OTELMetrics",
-		LogTable:           "OTELLogs",
-		TraceTable:         "OTELTraces",
-		MetricTableMapping: "otelmetrics_mapping",
-		LogTableMapping:    "otellogs_mapping",
-		TraceTableMapping:  "oteltraces_mapping",
+		ClusterURI:          "https://CLUSTER.kusto.windows.net",
+		ApplicationID:       "unknown",
+		ApplicationKey:      "unknown",
+		TenantID:            "unknown",
+		Database:            "not-configured",
+		MetricTable:         "OTELMetrics",
+		LogTable:            "OTELLogs",
+		TraceTable:          "OTELTraces",
+		ProfileTable:        "OTELProfiles",
+		MetricTableMapping:  "otelmetrics_mapping",
+		LogTableMapping:     "otellogs_mapping",
+		TraceTableMapping:   "oteltraces_mapping",
+		ProfileTableMapping: "otelprofiles_mapping",
 	}, "1.0.0")
 }
 
@@ -138,6 +148,23 @@ func TestTracesDataPusher(t *testing.T) {
 	}
 	assert.NotNil(t, adxDataProducer)
 	err := adxDataProducer.tracesDataPusher(t.Context(), createTracesData())
+	assert.Error(t, err)
+	assert.NoError(t, adxDataProducer.Close(t.Context()))
+}
+
+func TestProfilesDataPusher(t *testing.T) {
+	logger := zaptest.NewLogger(t)
+	var ingestOptions []azkustoingest.FileOption
+	ingestOptions = append(ingestOptions, azkustoingest.FileFormat(azkustoingest.JSON))
+	managedStreamingIngest, _ := azkustoingest.NewManaged(getKcsb(), azkustoingest.WithDefaultDatabase("testDB"), azkustoingest.WithDefaultTable("OTELProfiles"))
+
+	adxDataProducer := &adxDataProducer{
+		ingestor:      managedStreamingIngest,
+		ingestOptions: ingestOptions,
+		logger:        logger,
+	}
+	assert.NotNil(t, adxDataProducer)
+	err := adxDataProducer.profilesDataPusher(t.Context(), createProfilesData())
 	assert.Error(t, err)
 	assert.NoError(t, adxDataProducer.Close(t.Context()))
 }
@@ -334,4 +361,62 @@ func createTracesData() ptrace.Traces {
 	span.TraceState().FromRaw("")
 	span.Attributes().PutStr("key", "val")
 	return traces
+}
+
+func createProfilesData() pprofile.Profiles {
+	profiles := pprofile.NewProfiles()
+	dic := profiles.Dictionary()
+
+	// string_table: [0]="" [1]="cpu" [2]="nanoseconds" [3]="main" [4]="app.go"
+	dic.StringTable().Append("")
+	dic.StringTable().Append("cpu")
+	dic.StringTable().Append("nanoseconds")
+	dic.StringTable().Append("main")
+	dic.StringTable().Append("app.go")
+
+	// function_table: [0]=zero value, [1]=Function{name="main", file="app.go"}
+	dic.FunctionTable().AppendEmpty() // zero value
+	fn := dic.FunctionTable().AppendEmpty()
+	fn.SetNameStrindex(3)     // "main"
+	fn.SetFilenameStrindex(4) // "app.go"
+	fn.SetStartLine(10)
+
+	// mapping_table: [0]=zero value
+	dic.MappingTable().AppendEmpty()
+
+	// location_table: [0]=zero value, [1]=Location with Line→Function[1]
+	dic.LocationTable().AppendEmpty() // zero value
+	loc := dic.LocationTable().AppendEmpty()
+	loc.SetAddress(0x1234)
+	line := loc.Lines().AppendEmpty()
+	line.SetFunctionIndex(1) // → "main"
+	line.SetLine(42)
+
+	// stack_table: [0]=zero value, [1]=Stack with location [1]
+	dic.StackTable().AppendEmpty() // zero value
+	stack := dic.StackTable().AppendEmpty()
+	stack.LocationIndices().Append(1) // → location[1]
+
+	// link_table: [0]=zero value
+	dic.LinkTable().AppendEmpty()
+
+	// attribute_table: [0]=zero value
+	dic.AttributeTable().AppendEmpty()
+
+	rp := profiles.ResourceProfiles().AppendEmpty()
+	rp.Resource().Attributes().PutStr("service.name", "test-service")
+	sp := rp.ScopeProfiles().AppendEmpty()
+	sp.Scope().SetName("testprofiler")
+	sp.Scope().SetVersion("0.1")
+	profile := sp.Profiles().AppendEmpty()
+	profile.SetTime(ts)
+	profile.SetDurationNano(1000000000)     // 1s
+	profile.SampleType().SetTypeStrindex(1) // "cpu"
+	profile.SampleType().SetUnitStrindex(2) // "nanoseconds"
+
+	sample := profile.Samples().AppendEmpty()
+	sample.SetStackIndex(1) // → stack[1]
+	sample.Values().Append(500000000)
+
+	return profiles
 }
